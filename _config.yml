@@ -29,7 +29,7 @@ github_username:  iwasaki501
 blog: "https://i-was-a-ki.hatenablog.com/"
 
 # Build settings
-theme: jekyll-theme-minimal
+theme: minima
 plugins:
   - jekyll-feed
 
