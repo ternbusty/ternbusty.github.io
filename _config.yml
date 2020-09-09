@@ -32,8 +32,9 @@ blog: "https://i-was-a-ki.hatenablog.com/"
 theme: minima
 plugins:
   - jekyll-feed
+  - github-pages
 paginate: 1
-# paginate_path: /page:num/
+paginate_path: /page:num/
 # paginate_path: posts/page:num/
 
 # Exclude from processing.
