@@ -34,7 +34,7 @@ plugins:
   - jekyll-feed
   - github-pages
   - jekyll-paginate
-paginate: 1
+paginate: 5
 # paginate_path: /page:num/
 # paginate_path: posts/page:num/
 
