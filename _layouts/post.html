@@ -28,11 +28,37 @@ layout: default
     {%- endif -%}
 
 
-    {% include share_bar.html %}
     <a class="u-url" href="{{ page.url | relative_url }}" hidden></a>
+
+    <div class="PageNavigation">
+        {% if page.next.url %}
+        <a class="next" href="{{page.next.url}}">&laquo; {{page.next.title}} </a>
+        {% else %}
+        <a class="next" hidden></a>
+        {% endif %}
+        {% if page.previous.url %}
+        <a class="prev" href="{{page.previous.url}}">{{page.previous.title}} &raquo; </a>
+        {% else %}
+        <a class="prev" hidden></a>
+        {% endif %}
+    </div>
 </article>
 <style>
-    #share-bar {
-        margin-top: 30px;
+    .PageNavigation {
+        font-size: 20px;
+        display: block;
+        width: auto;
+        overflow: hidden;
+    }
+
+    .PageNavigation a {
+        display: block;
+        width: 50%;
+        float: left;
+        margin: 1em 0;
+    }
+
+    .PageNavigation .prev {
+        text-align: right;
     }
 </style>
