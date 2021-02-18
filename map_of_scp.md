@@ -1,8 +1,7 @@
 ---
-layout: post
+layout: page
 title: Map of SCP
-date: 2021-02-18 11:23
-category: just_for_fun
+permalink: /map_of_scp/
 ---
 
 <div class="flourish-embed flourish-network" data-src="visualisation/5326575"><script src="https://public.flourish.studio/resources/embed.js"></script></div>
