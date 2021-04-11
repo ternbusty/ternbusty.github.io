@@ -38,6 +38,11 @@ paginate: 5
 # paginate_path: /page:num/
 # paginate_path: posts/page:num/
 
+algolia:
+  application_id: I25Q6KCRDN
+  index_name: minima # You can replace that with whatever name you want
+  search_only_api_key: cd8e84c6736d78400445a5102ac92093
+
 # Exclude from processing.
 # The following items will not be processed, by default.
 # Any item listed under the `exclude:` key here will be automatically added to
