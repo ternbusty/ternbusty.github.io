@@ -22,6 +22,8 @@ jobs:
       env: 
         ALGOLIA_API_KEY: ${{ secrets.ALGOLIA_API_KEY }}
       run: |
+        sudo apt-get -yqq install libpq-dev
+        gem install bundler
         bundle install --jobs 4 --retry 3
         bundle exec jekyll build
         bundle exec jekyll algolia
