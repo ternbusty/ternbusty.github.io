@@ -43,6 +43,9 @@ algolia:
   index_name: minima # You can replace that with whatever name you want
   search_only_api_key: cd8e84c6736d78400445a5102ac92093
 
+# Google Analytics
+google_analytics: G-PRQ5143E4V
+
 # Exclude from processing.
 # The following items will not be processed, by default.
 # Any item listed under the `exclude:` key here will be automatically added to
