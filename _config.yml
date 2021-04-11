@@ -42,6 +42,9 @@ algolia:
   application_id: I25Q6KCRDN
   index_name: minima # You can replace that with whatever name you want
   search_only_api_key: cd8e84c6736d78400445a5102ac92093
+  files_to_exclude: 
+  - search.md
+  - search.html
 
 # Google Analytics
 google_analytics: G-PRQ5143E4V
