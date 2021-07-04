@@ -20,7 +20,10 @@
 
 # Build settings
 # theme: minima
+theme: jekyll-theme-chirpy
 remote_theme: jekyll-theme-chirpy
+baseurl: '/blog'
+
 
 # plugins:
   # - jekyll-feed
