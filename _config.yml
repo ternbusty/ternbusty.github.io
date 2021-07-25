@@ -22,7 +22,7 @@ title: ternbusty
 # email: your-email@example.com
 description: >- # this means to ignore newlines until "baseurl:"
   Daily progress
-baseurl: "" # the subpath of your site, e.g. /blog
+baseurl: "/archived" # the subpath of your site, e.g. /blog
 # url: "https://i-was-a-ki.hatenablog.com/" # the base hostname & protocol for your site, e.g. http://example.com
 # twitter_username: WalkingTrashbox
 github_username:  iwasaki501
@@ -38,13 +38,13 @@ paginate: 5
 # paginate_path: /page:num/
 # paginate_path: posts/page:num/
 
-algolia:
-  application_id: I25Q6KCRDN
-  index_name: minima # You can replace that with whatever name you want
-  search_only_api_key: cd8e84c6736d78400445a5102ac92093
-  files_to_exclude: 
-  - search.md
-  - search.html
+# algolia:
+#   application_id: I25Q6KCRDN
+#   index_name: minima # You can replace that with whatever name you want
+#   search_only_api_key: cd8e84c6736d78400445a5102ac92093
+#   files_to_exclude: 
+#   - search.md
+#   - search.html
 
 # Google Analytics
 google_analytics: G-PRQ5143E4V
