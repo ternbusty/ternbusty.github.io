@@ -22,7 +22,7 @@
 # theme: minima
 theme: jekyll-theme-chirpy
 remote_theme: jekyll-theme-chirpy
-baseurl: '/blog'
+# baseurl: '/blog'
 
 
 # plugins:
