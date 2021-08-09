@@ -58,6 +58,9 @@ tags: [医学]
 <p id="result"></p>
 </div>
 
+## 参考文献
+- レジデントのためのこれだけ輸液, 佐藤弘明, 日本医事新報社, 2020
+
 <script>
   function update() {
     var progress = document.getElementById("progress").value;
