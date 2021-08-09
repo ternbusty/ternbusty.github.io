@@ -1,138 +1,194 @@
-class status_container {
+class gas_calculator {
   constructor() {
-    this.metabolic_acidosis = false;
-    this.metabolic_alkarosis = false;
-    this.respiratory_acidosis = false;
-    this.respiratory_alkarosis = false;
+    this.ph_status_text,
+      this.status_text,
+      this.compensate_item,
+      this.actual_value,
+      this.adjusted_value,
+      this.ag,
+      this.adjusted_hco3;
+    this.is_ag_computable = false;
+    this.is_acidemia = this.is_alkaremia = false;
+    this.is_metabolic_acidosis =
+      this.is_respiratory_acidosis =
+      this.is_metabolic_alkarosis =
+      this.is_respiratory_alkarosis =
+        false;
+    this.is_ag_high = false;
+    this.is_compensate_enough = false;
+    this.progress = document.getElementById("progress").value;
+    this.ph = Number(document.getElementById("pH").value);
+    this.paco2 = Number(document.getElementById("PaCO2").value);
+    this.hco3 = Number(document.getElementById("HCO3-").value);
+    this.na = Number(document.getElementById("Na").value);
+    this.cl = Number(document.getElementById("Cl").value);
+    this.alb = Number(document.getElementById("Alb").value);
   }
-}
 
-function judge_ph(ph) {
-  var res;
-  if (ph <= 7.35) {
-    res = "アシデミア";
-    ph_change_flag = true;
-  } else if (ph >= 7.45) {
-    res = "アルカレミア";
-    ph_change_flag = true;
-  } else {
-    res = "正常";
+  judge_ph() {
+    if (this.ph <= 7.35) {
+      this.ph_status_text = "アシデミア";
+      this.is_acidemia = true;
+    } else if (this.ph >= 7.45) {
+      this.ph_status_text = "アルカレミア";
+      this.is_alkaremia = true;
+    } else {
+      this.ph_status_text = "正常";
+    }
   }
-  return res;
-}
 
-function reverse_respiratory_metabolic(status_text) {
-  var res;
-  if (status_text.match(/呼吸性/)) {
-    res = status_text.replace("呼吸性", "代謝性");
-  } else {
-    res = status_text.replace("代謝性", "呼吸性");
+  reverse_respiratory_metabolic() {
+    if (this.is_metabolic_acidosis) {
+      this.is_respiratory_acidosis = true;
+      return "呼吸性アシドーシス";
+    } else if (this.is_metabolic_alkarosis) {
+      this.is_respiratory_alkarosis = true;
+      return "呼吸性アルカローシス";
+    } else if (this.is_respiratory_acidosis) {
+      this.is_metabolic_acidosis = true;
+      return "代謝性アシドーシス";
+    } else {
+      // respiratory alkarosis
+      this.is_metabolic_alkarosis = true;
+      return "代謝性アルカローシス";
+    }
   }
-  return res;
+
+  judge_compensate_enough() {
+    if (
+      this.actual_value < this.adjusted_value - 2 ||
+      this.adjusted_value + 2 < this.actual_value
+    ) {
+      this.is_compensate_enough = false;
+    } else {
+      this.is_compensate_enough = true;
+    }
+  }
+
+  create_compensate_text() {
+    this.judge_compensate_enough();
+    var res = `<b>代償</b>: ${this.compensate_item} ${Math.round(
+      this.adjusted_value
+    )} (実測 ${this.compensate_item}: ${this.actual_value}) -> 代償は <b>${
+      this.is_compensate_enough
+        ? "適切"
+        : `不適切: ${this.reverse_respiratory_metabolic()} が存在`
+    }</b>`;
+    return res;
+  }
+
+  create_ag_text() {
+    if (this.ag > 14) return "開大性 = AG 開大性代謝性アシドーシス";
+    else if (this.is_metabolic_acidosis) {
+      return "非開大性 = AG 正常性代謝性アシドーシス (高 Cl 性代謝性アシドーシス)";
+    } else {
+      return "非開大性";
+    }
+  }
+
+  calc_ag() {
+    this.ag = this.na - this.cl - this.hco3;
+    if (this.alb !== "" && this.alb !== 0) {
+      if (this.alb < 4) {
+        this.ag += 2.5 * (4 - this.alb);
+      }
+    }
+    if (this.ag >= 14) {
+      this.is_ag_high = true;
+      this.adjusted_hco3 = this.hco3 + this.ag - 12;
+    }
+  }
+
+  metabolic_acidosis() {
+    this.is_metabolic_acidosis = true;
+    this.status_text = "代謝性アシドーシス";
+    this.compensate_item = "PaCO2";
+    this.actual_value = this.paco2;
+    this.adjusted_value = 40 - (24 - this.hco3) * 1.2;
+  }
+
+  respiratory_acidosis() {
+    this.is_respiratory_acidosis = true;
+    this.status_text = "呼吸性アシドーシス";
+    this.compensate_item = "HCO3-";
+    this.actual_value = this.hco3;
+    var ratio = this.progress === "acute" ? 0.1 : 0.35;
+    this.adjusted_value = 24 + (this.paco2 - 40) * ratio;
+  }
+
+  metabolic_alkarosis() {
+    this.is_metabolic_alkarosis = true;
+    this.status_text = "代謝性アルカローシス";
+    this.compensate_item = "PaCO2";
+    this.actual_value = this.paco2;
+    this.adjusted_value = 40 + (this.hco3 - 24) * 0.7;
+  }
+
+  respiratory_alkarosis() {
+    this.is_respiratory_alkarosis = true;
+    this.status_text = "呼吸性アルカローシス";
+    this.compensate_item = "HCO3-";
+    this.actual_value = this.hco3;
+    var ratio = this.progress === "acute" ? 0.2 : 0.5;
+    this.adjusted_value = 24 - (40 - this.paco2) * ratio;
+  }
 }
 
 function update() {
-  var progress = document.getElementById("progress").value;
-  var ph = Number(document.getElementById("pH").value);
-  var paco2 = Number(document.getElementById("PaCO2").value);
-  var hco3 = Number(document.getElementById("HCO3-").value);
-  var na = Number(document.getElementById("Na").value);
-  var cl = Number(document.getElementById("Cl").value);
-  var alb = Number(document.getElementById("Alb").value);
-  var result = "";
-
-  var obj = status_container();
-
+  var result = "<b>計算結果</b><br>";
+  var obj = new gas_calculator();
   if (
-    ph === "" ||
-    paco2 === "" ||
-    hco3 === "" ||
-    ph === 0 ||
-    paco2 === 0 ||
-    hco3 === 0
+    obj.ph === "" ||
+    obj.paco2 === "" ||
+    obj.hco3 === "" ||
+    obj.ph === 0 ||
+    obj.paco2 === 0 ||
+    obj.hco3 === 0
   ) {
     result += "未入力の項目があります";
     document.getElementById("result").innerHTML = result;
+    update_diagnosis(obj);
     return;
   }
   result += "<ul>";
-  var acidemia_or_alkalemia = judge_ph(ph);
-  var status_text,
-    compensate_item,
-    actual_value,
-    adjusted_value,
-    is_compensate_enough;
-  if (acidemia_or_alkalemia === "アシデミア") {
-    if (hco3 < 24) {
-      status_text = "代謝性アシドーシス";
-      compensate_item = "PaCO2";
-      actual_value = paco2;
-      adjusted_value = 40 - (24 - hco3) * 1.2;
-    }
-    if (paco2 > 40) {
-      status_text = "呼吸性アシドーシス";
-      compensate_item = "HCO3-";
-      actual_value = hco3;
-      var ratio = progress === "acute" ? 0.1 : 0.35;
-      adjusted_value = 24 + (paco2 - 40) * ratio;
-    }
-  }
-  if (acidemia_or_alkalemia === "アルカレミア") {
-    if (hco3 > 24) {
-      status_text = "代謝性アルカローシス";
-      compensate_item = "PaCO2";
-      actual_value = paco2;
-      adjusted_value = 40 + (hco3 - 24) * 0.7;
-    }
-    if (paco2 < 40) {
-      status_text = "呼吸性アルカローシス";
-      compensate_item = "HCO3-";
-      actual_value = hco3;
-      var ratio = progress === "acute" ? 0.2 : 0.5;
-      adjusted_value = 24 - (40 - paco2) * ratio;
-    }
+  obj.judge_ph();
+  if (obj.na !== "" && obj.cl !== "" && obj.na !== 0 && obj.cl !== 0) {
+    obj.is_ag_computable = true;
+    obj.calc_ag();
   }
 
-  var is_compensate_enough =
-    actual_value < adjusted_value - 2 || adjusted_value + 2 < actual_value
-      ? `不適切: ${reverse_respiratory_metabolic(status_text)} が存在`
-      : "適切";
-  var arr = [`<b>pH の確認</b>: ${acidemia_or_alkalemia}`];
-  if (acidemia_or_alkalemia !== "正常") {
-    arr.push(`<b>呼吸性か代謝性か</b>: ${status_text}`);
+  if (obj.is_acidemia) {
+    if (obj.hco3 < 24) obj.metabolic_acidosis();
+    if (obj.paco2 > 40) obj.respiratory_acidosis();
+  } else if (obj.is_alkaremia) {
+    if (obj.hco3 > 24) obj.metabolic_alkarosis();
+    if (obj.paco2 < 40) obj.respiratory_alkarosis();
+  } else if (obj.is_ag_high) {
+    // AG 開大しているなら代謝性アシドーシスがある
+    obj.metabolic_acidosis();
+  }
+
+  var arr = [`<b>pH の確認</b>: ${obj.ph_status_text}`];
+
+  if (obj.is_acidemia || obj.is_alkaremia) {
+    arr.push(`<b>呼吸性か代謝性か</b>: ${obj.status_text}`);
+    arr.push(obj.create_compensate_text());
+  }
+
+  if (obj.is_ag_computable)
+    arr.push(`<b>AG</b>: ${obj.ag} -> <b>${obj.create_ag_text()}</b>`);
+  if (obj.is_ag_high) {
+    // pH 上アシデミアはないが、AG 開大がある場合の代償を計算する
+    if (!obj.is_acidemia) arr.push(obj.create_compensate_text());
+    // 補正 HCO3- を計算
     arr.push(
-      `<b>代償されていれば</b>: ${compensate_item} ${Math.round(
-        adjusted_value
-      )} (実測 ${compensate_item}: ${actual_value}) -> 代償は <b>${is_compensate_enough}</b>`
+      `<b>補正 HCO3-</b>: ${obj.adjusted_hco3} ${
+        obj.adjusted_hco3 >= 26
+          ? "-> <b>代謝性アルカローシスの合併あり</b>"
+          : ""
+      }`
     );
-  }
-
-  if (na !== "" && cl !== "" && na !== 0 && cl !== 0) {
-    var ag = na - cl - hco3;
-    if (alb !== "" && alb !== 0) {
-      if (alb < 4) {
-        ag += 2.5 * (4 - alb);
-      }
-    }
-    var anion_gap_status;
-    if (ag > 14) anion_gap_status = "開大性 = AG 開大性代謝性アシドーシス";
-    else if (status_text === "代謝性アシドーシス") {
-      anion_gap_status =
-        "非開大性 = AG 正常性代謝性アシドーシス (高 Cl 性代謝性アシドーシス)";
-    } else {
-      anion_gap_status = "非開大性";
-    }
-    arr.push(`<b>AG</b>: ${ag} -> <b>${anion_gap_status}</b>`);
-    if (ag > 14) {
-      var adjusted_hco3 = hco3 + ag - 12;
-      arr.push(
-        `<b>補正 HCO3-</b>: ${adjusted_hco3} ${
-          adjusted_hco3 >= 26
-            ? "-> <b>代謝性アルカローシスの合併症あり</b>"
-            : ""
-        }`
-      );
-    }
+    if (obj.adjusted_hco3 >= 26) obj.is_metabolic_alkarosis = true;
   }
 
   arr.forEach((e) => {
@@ -140,6 +196,73 @@ function update() {
   });
   result += "</ul>";
   document.getElementById("result").innerHTML = result;
+  update_diagnosis(obj);
 }
 
+function update_diagnosis(obj) {
+  var diagnosis = "<b>鑑別</b>";
+  if (obj.is_metabolic_acidosis) {
+    if (!obj.is_ag_computable) {
+      diagnosis += metabolic_acidosis_ag_normal + metabolic_acidosis_ag_high;
+    } else if (!obj.is_ag_high) {
+      diagnosis += metabolic_acidosis_ag_normal;
+    } else {
+      diagnosis += metabolic_acidosis_ag_high;
+    }
+  }
+  if (obj.is_metabolic_alkarosis) {
+    diagnosis += metabolic_alkarosis;
+  }
+  if (obj.is_respiratory_acidosis) {
+    diagnosis += respiratory_acidosis;
+  }
+  if (obj.is_respiratory_alkarosis) {
+    diagnosis += respiratory_alkarosis;
+  }
+  document.getElementById("diagnosis").innerHTML = diagnosis;
+}
 
+var metabolic_acidosis_ag_normal = `<details>
+<summary>AG 正常性代謝性アシドーシス</summary>
+HARD-UP のゴロ合わせで覚える。現実的に最も考えやすいのは下痢と尿酸性化障害 (RTA, 腎不全初期)。<ul>
+<li>Hyperalimentation (過栄養)</li>
+<li>Acetazoramide (アセタゾラミド): 利尿薬は低 K かつアルカローシスをきたすが、アセタゾラミドは例外。人工的に RTA II 型を起こしているようなもの。</li>
+<li>Addison's disease (アジソン病) </li>
+<li>Renal tubular acidosis (<b>尿細管性アシドーシス</b>): 例外的に低 K かつアシドーシス</li>
+<li>Diarrhea (<b>下痢</b>): 例外的に低 K かつアシドーシス</li>
+<li>Ureteroenteric fistula (尿腸管瘻)</li>
+<li>Pancreatic fistula (膵液瘻)、parenteral saline (NaCl 大量補液)</li></ul></details>`;
+
+var metabolic_acidosis_ag_high = `<details>
+<summary>AG 開大性代謝性アシドーシス</summary>
+KUSSMAL-P のゴロ合わせで覚える。<ul>
+<li>Ketoasidosis (<b>ケトアシドーシス</b>)</li>
+<li>Uremia (尿毒症、<b>腎不全</b>) </li>
+<li>Salicylic acid (サリチル酸)</li>
+<li>Sepsis</li>
+<li>Methanol</li>
+<li>Alcoholic, Aspirin intoxication (アルコール中毒、アスピリン中毒)</li>
+<li>Lactic acidosis (<b>乳酸アシドーシス</b>。臓器虚血、けいれん発作後、VitB1 欠乏症に注意)</li>
+<li>Paraldehyde (パラアルデヒド)</ul></details>`;
+
+var metabolic_alkarosis = `<details>
+<summary>代謝性アルカローシス</summary>
+<b>尿 Cl < 20mEq のとき</b><ul>
+<li>嘔吐 (Cl が口から出ている)。生理食塩水で改善。</li></ul>
+
+<b>尿 Cl > 20mEq のとき</b><ul>
+ABCD のゴロ合わせで覚える。尿から Cl が出ていってしまっている。</li>
+<li>Aldosterone (アルドステロン症)</li>
+<li>Bartter / Gitelman (低 Mg 血症を合併するよね)</li>
+<li>Cushing</li>
+<li>Depletion of Magnesium</ul></details>`;
+
+var respiratory_acidosis = `<details>
+<summary>呼吸性アシドーシス</summary><ul>
+<li>急性: 上気道閉塞・喘息発作</li>
+<li>慢性: COPD, 中枢神経抑制、神経筋疾患</li></ul></details>`;
+
+var respiratory_alkarosis = `<details>
+<summary>呼吸性アルカローシス</summary>
+<li>急性: 低酸素血症・発熱・敗血症・過換気・薬物</li>
+<li>慢性: 貧血・妊娠・庵不全・脳血管障害</li></ul></details>`;
