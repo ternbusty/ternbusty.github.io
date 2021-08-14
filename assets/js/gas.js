@@ -15,7 +15,9 @@ class gas_calculator {
       this.is_respiratory_alkarosis =
         false;
     this.is_ag_high = false;
-    this.is_compensate_enough = false;
+    this.is_compensate_correct = false;
+    this.compensate_status_text = "";
+    this.is_unable_to_judge = false;
     this.progress = document.getElementById("progress").value;
     this.ph = Number(document.getElementById("pH").value);
     this.paco2 = Number(document.getElementById("PaCO2").value);
@@ -37,42 +39,39 @@ class gas_calculator {
     }
   }
 
-  reverse_respiratory_metabolic() {
-    if (this.is_metabolic_acidosis) {
-      this.is_respiratory_acidosis = true;
-      return "呼吸性アシドーシス";
-    } else if (this.is_metabolic_alkarosis) {
-      this.is_respiratory_alkarosis = true;
-      return "呼吸性アルカローシス";
-    } else if (this.is_respiratory_acidosis) {
-      this.is_metabolic_acidosis = true;
-      return "代謝性アシドーシス";
+  judge_compensate_status() {
+    if (this.actual_value < this.adjusted_value - 2) {
+      // 予測値より低い
+      if (this.compensate_item === "PaCO2") {
+        this.compensate_status_text = "呼吸性アルカローシス";
+        this.is_respiratory_alkarosis = true;
+      } else {
+        this.compensate_status_text = "代謝性アシドーシス";
+        this.is_metabolic_acidosis = true;
+      }
+    } else if (this.actual_value > this.adjusted_value + 2) {
+      // 予測値より高い
+      if (this.compensate_item === "PaCO2") {
+        this.compensate_status_text = "呼吸性アシドーシス";
+        this.is_respiratory_acidosis = true;
+      } else {
+        this.compensate_status_text = "代謝性アルカローシス";
+        this.is_metabolic_alkarosis = true;
+      }
     } else {
-      // respiratory alkarosis
-      this.is_metabolic_alkarosis = true;
-      return "代謝性アルカローシス";
-    }
-  }
-
-  judge_compensate_enough() {
-    if (
-      this.actual_value < this.adjusted_value - 2 ||
-      this.adjusted_value + 2 < this.actual_value
-    ) {
-      this.is_compensate_enough = false;
-    } else {
-      this.is_compensate_enough = true;
+      // 正常
+      this.is_compensate_correct = true;
     }
   }
 
   create_compensate_text() {
-    this.judge_compensate_enough();
+    this.judge_compensate_status();
     var res = `<b>代償</b>: ${this.compensate_item} ${Math.round(
       this.adjusted_value
     )} (実測 ${this.compensate_item}: ${this.actual_value}) -> 代償は <b>${
-      this.is_compensate_enough
+      this.is_compensate_correct
         ? "適切"
-        : `不適切: ${this.reverse_respiratory_metabolic()} が存在`
+        : `不適切: ${this.compensate_status_text} が存在`
     }</b>`;
     return res;
   }
@@ -132,6 +131,12 @@ class gas_calculator {
     var ratio = this.progress === "acute" ? 0.2 : 0.5;
     this.adjusted_value = 24 - (40 - this.paco2) * ratio;
   }
+
+  quit_judge(text) {
+    document.getElementById("result").innerHTML = text;
+    this.is_unable_to_judge = true;
+    update_diagnosis(this);
+  }
 }
 
 function update() {
@@ -145,9 +150,7 @@ function update() {
     obj.paco2 === 0 ||
     obj.hco3 === 0
   ) {
-    result += "未入力の項目があります";
-    document.getElementById("result").innerHTML = result;
-    update_diagnosis(obj);
+    obj.quit_judge("未入力の項目があります");
     return;
   }
   result += "<ul>";
@@ -160,11 +163,19 @@ function update() {
   if (obj.is_acidemia) {
     if (obj.hco3 < 24) obj.metabolic_acidosis();
     if (obj.paco2 > 40) obj.respiratory_acidosis();
+    if (obj.hco3 >= 24 && obj.paco2 <= 40) {
+      obj.quit_judge("判定不能です。入力内容を再度ご確認ください。");
+      return;
+    }
   } else if (obj.is_alkaremia) {
     if (obj.hco3 > 24) obj.metabolic_alkarosis();
     if (obj.paco2 < 40) obj.respiratory_alkarosis();
+    if (obj.hco3 <= 24 && obj.paco2 >= 40) {
+      obj.quit_judge("判定不能です。入力内容を再度ご確認ください。");
+      return;
+    }
   } else if (obj.is_ag_high) {
-    // AG 開大しているなら代謝性アシドーシスがある
+    // PH が正常でも、AG 開大しているなら代謝性アシドーシスがある
     obj.metabolic_acidosis();
   }
 
@@ -200,6 +211,10 @@ function update() {
 }
 
 function update_diagnosis(obj) {
+  if (obj.is_unable_to_judge) {
+    document.getElementById("diagnosis").innerHTML = "";
+    return;
+  }
   var diagnosis = "<b>鑑別</b>";
   if (obj.is_metabolic_acidosis) {
     if (!obj.is_ag_computable) {
