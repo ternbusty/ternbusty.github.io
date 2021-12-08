@@ -1728,3 +1728,17 @@ $sidebar-display: "sidebar-display";
     margin-left: 41px;
   }
 }
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 5px;
+  }
+  
+::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background: #aaaaaa;
+}
