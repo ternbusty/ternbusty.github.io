@@ -29,28 +29,9 @@
 {% assign js = type | prepend: '/assets/js/dist/' | append: '.min.js' %}
 <script defer src="{{ js | relative_url }}"></script>
 
-{% if page.math %}
-  <!-- MathJax -->
-  <script>
-  /* see: <https://docs.mathjax.org/en/latest/options/input/tex.html#tex-options> */
-  MathJax = {
-    tex: {
-      inlineMath: [              /* start/end delimiter pairs for in-line math */
-        ['$','$'],
-        ['\\(','\\)']
-      ],
-      displayMath: [             /* start/end delimiter pairs for display math */
-        ['$$', '$$'],
-        ['\\[', '\\]']
-      ]
-    }
-  };
-  </script>
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-  <script type="text/javascript" id="MathJax-script" async
-    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
-  </script>
-{% endif %}
+<script
+type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$']], processEscapes: true},});</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.6/MathJax.js?config=TeX-AMS_CHTML"></script>
 
 <!-- commons -->
 
