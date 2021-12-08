@@ -2,8 +2,8 @@
 layout: post
 title: "輸液の基本"
 date: 2021-07-04 00:00:00 +0900
-categories: [医学, 輸液]
-tags: [医学, 輸液]
+categories: [Medicine, Electrolyte]
+tags: []
 ---
 
 ## 体内の水分分布

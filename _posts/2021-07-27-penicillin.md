@@ -2,8 +2,8 @@
 layout: post
 title: ペニシリン系
 date: 2021-07-27
-categories: [医学, 感染症]
-tags: [医学, 感染症]
+categories: [Medicine, Infectious Diseases]
+tags: []
 ---
 
 ## 古典的ペニシリン

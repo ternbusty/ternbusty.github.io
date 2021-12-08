@@ -2,8 +2,7 @@
 layout: post
 title: 抗菌薬の基本
 date: 2021-07-26
-categories: [医学, 感染症]
-tags: [医学, 感染症]
+categories: [Medicine, Infectious Diseases]
 ---
 
 ## 細菌の分類

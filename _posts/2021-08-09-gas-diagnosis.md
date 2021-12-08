@@ -2,8 +2,8 @@
 layout: post
 title: 酸塩基平衡障害の鑑別
 date: 2021-08-09
-categories: [医学, 酸塩基平衡]
-tags: [医学, 酸塩基平衡]
+categories: [Medicine, Electrolyte]
+tags: []
 ---
 
 ## 鑑別の手順

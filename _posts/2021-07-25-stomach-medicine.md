@@ -2,8 +2,8 @@
 layout: post
 title: "胃薬の使い分け"
 date: 2021-07-25 00:00:00 +0900
-categories: [医学, 頻用薬]
-tags: [医学, 頻用薬]
+categories: [Medicine, Drugs]
+tags: []
 ---
 
 ## 消化薬・胃腸機能調整薬
