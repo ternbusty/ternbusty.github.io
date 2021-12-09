@@ -2,7 +2,7 @@
 layout: post
 title: 酸塩基平衡障害の鑑別
 date: 2021-08-09
-categories: [Medicine, Electrolyte]
+categories: [Medicine, Electrolytes]
 tags: []
 ---
 

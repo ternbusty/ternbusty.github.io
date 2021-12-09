@@ -2,7 +2,7 @@
 layout: post
 title: 高 Na 血症
 date: 2021-08-09
-categories: [Medicine, Electrolyte]
+categories: [Medicine, Electrolytes]
 tags: []
 ---
 

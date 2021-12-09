@@ -2,7 +2,7 @@
 layout: post
 title: "輸液の基本"
 date: 2021-07-04 00:00:00 +0900
-categories: [Medicine, Electrolyte]
+categories: [Medicine, Electrolytes]
 tags: []
 ---
 

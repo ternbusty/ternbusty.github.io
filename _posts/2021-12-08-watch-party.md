@@ -97,10 +97,8 @@ function init() {
   var stamp = this_elem.firstChild;
   var newA = document.createElement("a");
   newA.id = "download_link";
-  newA.innerHTML = "Download Chat history";
+  newA.innerHTML = "Download Chat History";
   newA.style.color = 'rgb(242, 244, 246)';
-  newA.style.textAlign = 'center';
-  newA.class = "fas fa-envelope";
   newA.setAttribute("onclick", "dl()");
   newA.download = '';
   stamp.after(newA);
