@@ -54,12 +54,12 @@ social:
 # ↑ --------------------------
 
 
-# google_analytics:
+google_analytics:
   id: 'G-PRQ5143E4V'              # fill in your Google Analytics ID
-#   # Google Analytics pageviews report settings
-#   pv:
-#     proxy_endpoint:   # fill in the Google Analytics superProxy endpoint of Google App Engine
-#     cache_path:       # the local PV cache data, friendly to visitors from GFW region
+  # Google Analytics pageviews report settings
+  pv:
+    proxy_endpoint:   # fill in the Google Analytics superProxy endpoint of Google App Engine
+    cache_path:       # the local PV cache data, friendly to visitors from GFW region
 
 # Prefer color scheme setting.
 #
