@@ -21,7 +21,7 @@
 }
 
 %anchor {
-  > a {
+  .anchor{
     font-size: 70%;
     visibility: hidden;
     margin-left: 0.25rem;
@@ -42,7 +42,7 @@
 %anchor-relative {
   @extend %anchor;
 
-  > a {
+  .anchor{
     position: relative;
     bottom: 1px;
   }
