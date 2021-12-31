@@ -366,3 +366,23 @@ nav[data-toggle=toc] {
     margin-right: -0.5rem;
   }
 }
+
+.link-card {
+  border-color: var(--card-border-color);
+  background-color: var(--card-bg);
+  box-shadow: 0 0 5px 0 var(--card-box-shadow);
+  -webkit-transition: all 0.3s ease-in-out;
+  -moz-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
+  margin-bottom: 20px;
+
+  h3 {
+    @extend %text-color;
+  }
+
+  &:hover {
+    -webkit-transform: translate3d(0, -3px, 0);
+    transform: translate3d(0, -3px, 0);
+    box-shadow: 0 10px 15px -4px rgba(0, 0, 0, 0.15);
+  }
+}
