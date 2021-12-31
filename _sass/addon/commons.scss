@@ -1742,3 +1742,43 @@ $sidebar-display: "sidebar-display";
   border-radius: 5px;
   background: #aaaaaa;
 }
+
+.language-tag {
+  display: inline-block;
+  min-width: 2rem;
+  text-align: center;
+  font-size: 0.85rem;
+  margin-left: 5px;
+  color: #ffffff;
+  border-radius: 0.3rem;
+  padding: 0 0.4rem;
+  line-height: 1.3rem;
+  text-decoration: none;
+}
+.my-orange {
+  background: rgb(245, 174, 10);
+}
+.my-purple {
+  background: rgb(174, 173, 235);
+}
+.my-gray {
+  background: rgb(148, 147, 147);
+}
+.my-green {
+  background: rgb(149, 206, 116);
+}
+.my-pink {
+  background: rgb(226, 169, 226);
+}
+.my-red {
+  background: rgb(233, 159, 159)
+}
+.my-blue {
+  background: rgb(159, 187, 233)
+}
+.my-brown {
+  background: rgb(206, 159, 74)
+}
+.my-moegi {
+  background: rgb(191, 201, 52)
+}
