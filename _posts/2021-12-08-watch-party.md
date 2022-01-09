@@ -2,8 +2,8 @@
 layout: post
 title: Amazon Prime Video の Watch Party でチャット履歴を保存する
 date: 2021-12-08
-categories: [Technology, Products]
-tags: [JavaScript]
+categories: [Technology, Automation]
+tags: [JavaScript, Product]
 ---
 
 ## 動機
