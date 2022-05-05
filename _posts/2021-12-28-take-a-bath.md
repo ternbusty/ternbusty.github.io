@@ -3,7 +3,7 @@ layout: post
 title: IoT を使って嫌でも風呂に入らざるを得ないようにする
 date: 2021-12-28
 categories: [Technology, IoT]
-tags: [Python, IoT, Products]
+tags: [Python, IoT, Product]
 ---
 
 ## 概要
