@@ -45,15 +45,22 @@ order: 4
 
 ### Oral presentations
 
-- **岩崎**, 長期短期記憶と心拍変動に基づく睡眠時無呼吸症候群のスクリーニング, 人工知能学会全国大会, 2019
+- **岩崎** ら, 長期短期記憶と心拍変動に基づく睡眠時無呼吸症候群のスクリーニング, 人工知能学会全国大会, 2019
 - **Iwasaki A**, Nakayama C, Fujiwara K, et al. , Development of a Sleep Apnea Detection Algorithm Using Long Short-Term Memory and Heart Rate Variability, IEEE EMBC 2019, 2019
 - **岩崎**, AI 技術をどのように循環器診療に役立たせるか, 第 84 回日本循環器学会学術集会, 2020
+- **岩崎** ら, 頸部痛を契機に診断を見直された強直性脊椎炎の一例, 第 676 回日本内科学会関東地方会
 
 ### Poster presentations
 
 - **Iwasaki A**, Nakayama C, Hori K, et al, Development and Validation of a Sleep Apnea Syndrome Screening Algorithm Using Heart Rate Variability and Long Short-Term Memory, European Sleep Research Society, 2020
 
 ## Products
+
+### 低レイヤ関連
+
+**[Jack 言語のアセンブラ・コンパイラ自作](https://ternbusty.github.io/tags/nand2tetris/,)** <span class="language-tag my-orange">Python</span> <span class="language-tag my-gray">Assembly</span>
+- [コンピュータシステムの理論と実装](https://www.oreilly.co.jp/books/9784873117126/) を参考に、Python を用いて実装した
+- アセンブラ・コンパイラが動作するアーキテクチャそのものも HDL を用いて自作した
 
 ### IoT 関連
 
