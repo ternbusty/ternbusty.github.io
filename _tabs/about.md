@@ -39,9 +39,9 @@ order: 4
 
 ### Publications
 
-- Okada D, Nakamura N, Wada T, **Iwasaki A** and Yamada R, Extension of Sinkhorn Method: Optimal Movement Estimation of Agents Moving at Constant Velocity, Transactions of the Japanese Society for Artificial Intelligence Vol.34 No.5 pp D-J13 1-7, 2019
+- **Iwasaki A**, Fujiwara K, Nakayama C, et al. R-R interval-based sleep apnea screening by a recurrent neural network in a large clinical polysomnography dataset. Clinical Neurophysiology. 2022
 - **Iwasaki A**, Nakayama C, Fujiwara K, et al. Screening of sleep apnea based on heart rate variability and long short-term memory. Sleep Breath. 2021.
-- **Iwasaki A**, Fujiwara K, Nakayama C, et al. Validation of an RR interval and neural network-based sleep apnea syndrome screening method with a large clinical PSG dataset. (Under review)
+- Okada D, Nakamura N, Wada T, **Iwasaki A** and Yamada R, Extension of Sinkhorn Method: Optimal Movement Estimation of Agents Moving at Constant Velocity, Transactions of the Japanese Society for Artificial Intelligence Vol.34 No.5 pp D-J13 1-7, 2019
 
 ### Oral presentations
 
@@ -64,12 +64,12 @@ order: 4
 
 ### IoT 関連
 
-**[全自動布団引きはがし機](https://qiita.com/iwasaki501/items/bef574953391021e4e10)** <span class="language-tag my-orange">Python</span>
+**[全自動布団引きはがし機](https://qiita.com/ternbusty/items/bef574953391021e4e10)** <span class="language-tag my-orange">Python</span>
 
 - 冬場に布団から出られないため, RaspberryPi とモータを用いて布団を引きはがす機械を製作した
 - RaspberryPi は web サーバとして運用し, スマートフォンからの時刻設定を可能にした
 
-**[IoT を使って毎朝風呂に入らざるを得ないようにする](https://iwasaki501.github.io/posts/take-a-bath/)** <span class="language-tag my-orange">Python</span>
+**[IoT を使って毎朝風呂に入らざるを得ないようにする](https://ternbusty.github.io/posts/take-a-bath/)** <span class="language-tag my-orange">Python</span>
 
 - 毎朝決まった時間に風呂場の湿度を一定以上にしないと、部屋の電気が永遠に点滅し続ける
 - Nature Remo と SwitchBot 湿度計を RaspberryPi で制御
@@ -88,22 +88,22 @@ order: 4
 
 ### 医学関連
 
-**[血ガス自動判定ツール](https://iwasaki501.github.io/posts/gas/)** <span class="language-tag my-purple">JavaScript</span>
+**[血ガス自動判定ツール](https://ternbusty.github.io/posts/gas/)** <span class="language-tag my-purple">JavaScript</span>
 
 - 血ガスの結果を入力すると解釈と考えられる病態を出力する web フォーム
 
-**[薬剤情報管理ツール](https://github.com/iwasaki501/DrugInfo)** <span class="language-tag my-purple">JavaScript</span>
+**[薬剤情報管理ツール](https://github.com/ternbusty/DrugInfo)** <span class="language-tag my-purple">JavaScript</span>
 
 - 薬剤名を入力すると分類と副作用を自動で取得して自動で埋めてくれる Google Spreadsheet
 
-**[検査値自動整形スクリプト](https://gist.github.com/iwasaki501/2342b470dda55985393a16c04b21c1eb)** <span class="language-tag my-pink">Visual Basic</span>
+**[検査値自動整形スクリプト](https://gist.github.com/ternbusty/2342b470dda55985393a16c04b21c1eb)** <span class="language-tag my-pink">Visual Basic</span>
 
 - 病院実習でレポートを書く際, 電子カルテからコピペした検査値をフォーマットするのが非常にダルいため, 単位付与および整形を自動化する Word マクロを書いた
 - おそらく IBM の電子カルテにしか対応していない
 
 ### その他
 
-**[誕生日お祝い用シェルスクリプト](https://qiita.com/iwasaki501/items/c6c0c0cd5d67a470eb6a)** <span class="language-tag my-gray">C</span> <span class="language-tag my-green">ShellScript</span>
+**[誕生日お祝い用シェルスクリプト](https://qiita.com/ternbusty/items/c6c0c0cd5d67a470eb6a)** <span class="language-tag my-gray">C</span> <span class="language-tag my-green">ShellScript</span>
 
 - 友人の Twitter アイコンおよびお祝いメッセージを含んだ画像を数式で表現し、それを gnuplot で描画させる
 
@@ -111,11 +111,11 @@ order: 4
 
 - Twitter API を叩いて「自分がフォローしているアカウント、およびそれらがフォローしているアカウント」を走査し、フォロー外鍵垢のフォロワーを探す
 
-**[Amazon Prime Video の Watch Party でチャット履歴を保存する](https://iwasaki501.github.io/posts/watch-party/)** <span class="language-tag my-purple">JavaScript</span>
+**[Amazon Prime Video の Watch Party でチャット履歴を保存する](https://ternbusty.github.io/posts/watch-party/)** <span class="language-tag my-purple">JavaScript</span>
 
 - Amazon Prime Video の Watch Party のチャット履歴が保存されないため、チャットウィンドウ内をスクレイピングして会話記録をダウンロードできるようにする
 
-**[D カードの履歴ダウンロードツール](https://github.com/iwasaki501/DCardHistoryDownloader/blob/main/scrapeHistory.py)** <span class="language-tag my-orange">Python</span>
+**[D カードの履歴ダウンロードツール](https://github.com/ternbusty/DCardHistoryDownloader/blob/main/scrapeHistory.py)** <span class="language-tag my-orange">Python</span>
 
 - D カードのマイページにログインして利用履歴をスクレイピングする
 
