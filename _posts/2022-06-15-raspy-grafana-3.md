@@ -30,9 +30,9 @@ YouTube 再生中に流れてくるパケットを眺めていると、どうや
 
 ### Amazon Prime Video
 
-日付が変わったころから適当なアニメを流していたらこんな感じになった。上記同様、ドメイン名に `aiv-cdn.net` を含むものに nickname `Amazon Prime Video` を設定している。
-
 ![amapra](../../assets/img/raspy-grafana/amapra.png)
+
+日付が変わったころから適当なアニメを流していたらこんな感じになった。上記同様、ドメイン名に `aiv-cdn.net` を含むものに nickname `Amazon Prime Video` を設定している。
 
 ## 常駐サービスのトラフィックを眺める
 
@@ -40,15 +40,15 @@ YouTube 再生中に流れてくるパケットを眺めていると、どうや
 
 ### LINE
 
-PC で LINE を起動したままトラフィックを見てみることにした。小さな山があるのはメッセージの受信があったタイミングや iPhone からも LINE アプリを開いたタイミングに該当する。7:22 に適当な写真を iPhone の LINE から送信してみたところ跳ね上がりが確認できたので、ちゃんと拾えていそうだ。
-
 ![line](../../assets/img/raspy-grafana/line.png)
+
+PC で LINE を起動したままトラフィックを見てみることにした。小さな山があるのはメッセージの受信があったタイミングや iPhone からも LINE アプリを開いたタイミングに該当する。7:22 に適当な写真を iPhone の LINE から送信してみたところ跳ね上がりが確認できたので、ちゃんと拾えていそうだ。
 
 ### Dropbox
 
 ![dropbox1](../../assets/img/raspy-grafana/dropbox1.png)
 
-特に何もアクセスが生じていない状態であっても不定期なアクセスが確認できる。
+特に何もファイル操作が生じていない状態であっても不定期なアクセスが確認できる。
 
 ![dropbox2](../../assets/img/raspy-grafana/dropbox2.png)
 
