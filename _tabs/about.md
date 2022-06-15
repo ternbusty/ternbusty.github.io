@@ -62,6 +62,12 @@ order: 4
 - [コンピュータシステムの理論と実装](https://www.oreilly.co.jp/books/9784873117126/) を参考に、Python を用いて実装した
 - アセンブラ・コンパイラが動作するアーキテクチャそのものも HDL を用いて自作した
 
+### ネットワーク関連
+
+**[自宅ネットワークを Grafana でモニタリング](https://ternbusty.github.io/tags/raspy-grafana/)** <span class="language-tag my-orange">Python</span>
+- Raspberry Pi で自宅ネットワークのパケットキャプチャを行ったうえで、IP アドレスから通信先 web サービスを特定し Grafana で可視化した
+- ポートミラーリング機能付きスイッチおよび無線 LAN アクセスポイントを用いて、全てのパケットが Raspberry Pi に届くように工夫した
+
 ### IoT 関連
 
 **[全自動布団引きはがし機](https://qiita.com/ternbusty/items/bef574953391021e4e10)** <span class="language-tag my-orange">Python</span>
