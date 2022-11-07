@@ -29,7 +29,7 @@ order: 4
 
 - Other activities
 
-  - Joined [Google STEP program](https://buildyourfuture.withgoogle.com/programs/step/) 2020 ([repository](https://github.com/iwasaki501/STEP)) <span class="language-tag my-red">C++</span> <span class="language-tag my-orange">Python</span>
+  - Joined [Google STEP program](https://buildyourfuture.withgoogle.com/programs/step/) 2020 ([repository](https://github.com/ternbusty/STEP)) <span class="language-tag my-red">C++</span> <span class="language-tag my-orange">Python</span>
 
 ## Research experience
 
@@ -68,6 +68,10 @@ order: 4
 - Raspberry Pi で自宅ネットワークのパケットキャプチャを行ったうえで、IP アドレスから通信先 web サービスを特定し Grafana で可視化した
 - ポートミラーリング機能付きスイッチおよび無線 LAN アクセスポイントを用いて、全てのパケットが Raspberry Pi に届くように工夫した
 
+**[Wi-Fi 打刻システムの構築](https://ternbusty.github.io/posts/wifi-checkin/)** <span class="language-tag my-orange">Python</span>
+- 職場に打刻システムがないため、自分の帰宅時刻を記録することにより時間外勤務の実態を把握しようという試み
+- パケットキャプチャを行うことにより iPhone が自宅ネットワークに接続されているかどうかを判定。これを用いて出勤や帰宅を検知し、Slack へ通知した
+
 ### IoT 関連
 
 **[全自動布団引きはがし機](https://qiita.com/ternbusty/items/bef574953391021e4e10)** <span class="language-tag my-orange">Python</span>
@@ -80,6 +84,11 @@ order: 4
 - 毎朝決まった時間に風呂場の湿度を一定以上にしないと、部屋の電気が永遠に点滅し続ける
 - Nature Remo と SwitchBot 湿度計を RaspberryPi で制御
 
+**[IoT を使って毎朝体重を測らざるを得ないようにする](https://ternbusty.github.io/posts/measure-weight/)** <span class="language-tag my-orange">Python</span>
+
+- 毎朝決まった時間にその日の体重が計測されていないと、心停止のときに作動するアラームが延々と鳴り続ける
+- スマート体重計 (Withings Body) からサーバへアップロードされた体重データを、Raspberry Pi から API 経由で取得
+
 ### Google Apps Script を用いた自動化
 
 **[家計簿入力自動化](https://i-was-a-ki.hatenablog.com/entry/2020/03/01/143801)** <span class="language-tag my-purple">JavaScript</span>
@@ -91,6 +100,17 @@ order: 4
 **[天気予報 bot](https://i-was-a-ki.hatenablog.com/entry/2017/11/27/084606)** <span class="language-tag my-purple">JavaScript</span>
 
 - 天気予報を確認するのがダルいため, 京都の天気を毎朝 6:30 にツイートする [Twitter bot](https://twitter.com/kyoto__weather) を作った
+- その日の予報に合わせてアイコンを変化させることにより、一目で天気が分かるようにした
+- [東京版](https://twitter.com/tokyo__weather) もあり
+
+### ウェブサイト
+**[SCP Network Wiki](https://ternbusty.github.io/scp_network_wiki/)** <span class="language-tag my-orange">Python</span>
+- [SCP Foundation](https://scp-wiki.wikidot.com/) および [SCP 財団](http://scp-jp.wikidot.com/) をスクレイピングし、各 SCP や tale の引用・被引用関係を可視化するサイト。Jekyll を用いて構築した
+- [ネットワークの可視化](https://ternbusty.github.io/scp_network_wiki/visualization/SCP%20network%20visualization.html) 部分には、[Flourish network chart](https://app.flourish.studio/@flourish/network-graph) を用いている
+
+**[オモコロチャンネルサーチ](https://omoch.net/)** <span class="language-tag my-orange">Python</span> <span class="language-tag my-green">ShellScript</span>
+- [オモコロチャンネル](https://www.youtube.com/c/omocorochannel) をキーワード検索するサービス。Wordpress を用いて構築した
+- データは YouTube Data API を用いて取得。新規動画データの Wordpress への追加も含め完全な自動化を行った。構築についての記事は [こちら](https://ternbusty.github.io/posts/omoch/)
 
 ### 医学関連
 
