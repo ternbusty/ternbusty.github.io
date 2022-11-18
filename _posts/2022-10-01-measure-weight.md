@@ -1,7 +1,7 @@
 ---
 layout: post
 title: IoT を使って毎朝体重を測らざるを得ないようにする
-date: 2022-09-01
+date: 2022-10-01
 categories: [Technology, IoT]
 tags: [Python, Raspberry Pi, Product]
 ---
