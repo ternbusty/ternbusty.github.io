@@ -1,0 +1,18 @@
+table {
+  width: 640px;
+}
+
+#player {
+  margin-bottom: 20px;
+}
+
+.table-wrapper {
+  width: 640px;
+  height: 250px;
+  overflow: scroll;
+  overflow-x: hidden;
+}
+
+.body {
+  scrollbar-width: none;
+}
