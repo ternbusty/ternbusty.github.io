@@ -3,7 +3,7 @@ function process_input(message) {
   console.log(playlist_id);
   if ((playlist_id !== "") & (playlist_id !== null))
     window.location.href =
-      "http://localhost:4000/posts/youtube/?" + playlist_id;
+      "https://ternbusty.github.io/posts/youtube/?" + playlist_id;
   else process_input("不正なプレイリスト ID です。正しい値を入力してください");
 }
 
