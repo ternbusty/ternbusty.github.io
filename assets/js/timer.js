@@ -93,6 +93,7 @@ function getTaskStr() {
 function work2break() {
   timer_status = "break";
   button.value = "Back to work";
+  button.style.background = "#caddfc";
   work_timer.worker.postMessage(0);
   total_working_timer.worker.postMessage(0);
   break_timer.worker.postMessage(1);
@@ -102,6 +103,7 @@ function work2break() {
 function break2Work() {
   timer_status = "work";
   button.value = "Take a break";
+  button.style.background = "#ffc0b8";
   audio.pause();
   if (calcTime(break_timer) < 0) {
     setTime(work_timer, calcTime(work_timer) - calcTime(break_timer));
