@@ -18,9 +18,7 @@ total_working_timer.worker.onmessage = function (e) {
 let button = document.getElementById("switch_mode_button");
 let task_input = document.getElementById("task_input");
 let table = document.getElementById("history_table");
-
 let timer_status = "break";
-work2break();
 
 function addRow(table, date_str, task_str) {
   var tr = table.insertRow(-1);
@@ -122,6 +120,13 @@ function takeLunch() {
   if (timer_status === "break") break_timer.worker.postMessage(0);
   work2break();
   document.getElementById("take_lunch_button").style.display = "none";
+}
+
+function start() {
+  addRow(table, createDateStr(), "Start today's job");
+  work2break();
+  document.getElementById("start").style.display = "none";
+  document.getElementById("timer_main").style.display = "block";
 }
 
 function switchMode() {

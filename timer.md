@@ -8,6 +8,11 @@ tags: [JavaScript, Product]
 
 <audio id="audio"></audio>
 
+<div id="prompt">
+<input id="start" type="button" value="Start today's job" onclick="start()">
+</div>
+
+<div id="timer_main">
 <div id="task">
 <input id="task_input" type="text" placeholder="Type your task">
 </div>
@@ -41,10 +46,25 @@ tags: [JavaScript, Product]
   <tbody>
   </tbody>
 </table></div>
+</div>
 
 <script type="text/javascript" src="./assets/js/timer.js"></script>
 
 <style>
+#timer_main {
+  display: none;
+}
+
+#prompt {
+  text-align: center;
+}
+
+#start {
+  font-size: 2vmax;
+  width: 400px;
+  padding: 10px;
+}
+
 input {
   border: none;
 }
@@ -91,14 +111,7 @@ input[type="button"] {
 table th {
   padding-left: 20px;
   width:30%;
-  /* word-break: break-all; */
 }
-
-/* table td {
-  width: 70%;
-  word-break: break-all;
-  overflow-wrap: break-all;
-} */
 
 #task {
   text-align: center;
