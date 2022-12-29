@@ -13,8 +13,8 @@ tags: [JavaScript, Product]
 </div>
 
 <div id="buttons">
-<input id="switch_mode_button" type="button" value="Start working" onclick="switch_mode()">
-<input id="take_lunch_button" type="button" value="Take a 30 min break" onclick="take_lunch()">
+<input id="switch_mode_button" type="button" value="Start working" onclick="switchMode()">
+<input id="take_lunch_button" type="button" value="Take a 30 min break" onclick="takeLunch()">
 </div>
 
 <div id="forms">
@@ -23,9 +23,9 @@ tags: [JavaScript, Product]
 <input type="number" value=0 readonly>:<input type="number" value=25 readonly>:<input type="number" value=0 readonly>
 </form>
 
-<h2>Rest Timer</h2>
-<form name="rest_timer">
-<input type="number" value=0 readonly>:<input type="number" value=0 readonly>:<input type="number" value=0 readonly>
+<h2>Break Timer</h2>
+<form name="break_timer">
+<input type="number" value=0 readonly>:<input type="number" value=5 readonly>:<input type="number" value=0 readonly>
 </form>
 
 <h2>Total Working Time</h2>
@@ -35,6 +35,7 @@ tags: [JavaScript, Product]
 </div>
 
 <div id="history">
+<h2>History</h2>
 </div>
 <div class="table-wrapper"><table id="history_table">
   <tbody>
@@ -90,7 +91,14 @@ input[type="button"] {
 table th {
   padding-left: 20px;
   width:30%;
+  /* word-break: break-all; */
 }
+
+/* table td {
+  width: 70%;
+  word-break: break-all;
+  overflow-wrap: break-all;
+} */
 
 #task {
   text-align: center;

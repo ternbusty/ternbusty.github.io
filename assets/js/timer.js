@@ -1,14 +1,14 @@
 let work_timer = document.work_timer;
-let rest_timer = document.rest_timer;
+let break_timer = document.break_timer;
 let total_working_timer = document.total_working_timer;
 
 work_timer.worker = new Worker("/assets/js/worker.js");
 work_timer.worker.onmessage = function (e) {
   cntDown(work_timer);
 };
-rest_timer.worker = new Worker("/assets/js/worker.js");
-rest_timer.worker.onmessage = function (e) {
-  cntDown(rest_timer);
+break_timer.worker = new Worker("/assets/js/worker.js");
+break_timer.worker.onmessage = function (e) {
+  cntDown(break_timer);
 };
 total_working_timer.worker = new Worker("/assets/js/worker.js");
 total_working_timer.worker.onmessage = function (e) {
@@ -18,7 +18,9 @@ total_working_timer.worker.onmessage = function (e) {
 let button = document.getElementById("switch_mode_button");
 let task_input = document.getElementById("task_input");
 let table = document.getElementById("history_table");
-let timer_status = "not_started";
+
+let timer_status = "break";
+work2break();
 
 function addRow(table, date_str, task_str) {
   var tr = table.insertRow(-1);
@@ -64,9 +66,9 @@ function setTime(timer, time) {
 function processTime(timer, time) {
   if (time === 0) {
     if (timer.name === "work_timer") {
-      setTime(rest_timer, calcTime(rest_timer) + 300);
+      setTime(break_timer, calcTime(break_timer) + 300);
       setTime(work_timer, 1500);
-    } else if (timer.name === "rest_timer") {
+    } else if (timer.name === "break_timer") {
       audio.src = "/assets/cpa.mp3";
       audio.play();
       setTime(timer, time);
@@ -84,51 +86,50 @@ function cntUp(timer) {
   processTime(timer, time + 1);
 }
 
-function take_lunch() {
-  timer_status = "rest";
+function takeLunch() {
+  timer_status = "break";
   button.value = "Back to work";
-  setTime(rest_timer, calcTime(rest_timer) + 1800);
+  setTime(break_timer, calcTime(break_timer) + 1800);
   work_timer.worker.postMessage(0);
   total_working_timer.worker.postMessage(0);
-  rest_timer.worker.postMessage(1);
+  break_timer.worker.postMessage(1);
   document.getElementById("take_lunch_button").style.display = "none";
   addRow(table, createDateStr(), `Take a break`);
 }
 
-function switch_mode() {
-  let get_task_str = function () {
-    let task_value = task_input.value;
-    if (task_value === "") return "working";
-    return task_value;
-  };
-  if (timer_status == "not_started") {
-    // not started -> work
-    timer_status = "work";
-    button.value = "Take a rest";
-    work_timer.worker.postMessage(1);
-    total_working_timer.worker.postMessage(1);
-    document.getElementById("history").innerHTML = "<h2>History</h2>";
-    addRow(table, createDateStr(), `Start ${get_task_str()}`);
-  } else if (timer_status == "work") {
-    // work -> rest
-    timer_status = "rest";
-    button.value = "Back to work";
-    work_timer.worker.postMessage(0);
-    total_working_timer.worker.postMessage(0);
-    rest_timer.worker.postMessage(1);
-    addRow(table, createDateStr(), `Take a rest`);
+function getTaskStr() {
+  let task_value = task_input.value;
+  if (task_value === "") return "working";
+  return `"${task_input.value}"`;
+}
+
+function work2break() {
+  timer_status = "break";
+  button.value = "Back to work";
+  work_timer.worker.postMessage(0);
+  total_working_timer.worker.postMessage(0);
+  break_timer.worker.postMessage(1);
+  addRow(table, createDateStr(), `Take a break`);
+}
+
+function break2Work() {
+  timer_status = "work";
+  button.value = "Take a break";
+  audio.pause();
+  if (calcTime(break_timer) < 0) {
+    setTime(work_timer, calcTime(work_timer) - calcTime(break_timer));
+    setTime(break_timer, 0);
+  }
+  break_timer.worker.postMessage(0);
+  work_timer.worker.postMessage(1);
+  total_working_timer.worker.postMessage(1);
+  addRow(table, createDateStr(), `Start ${getTaskStr()}`);
+}
+
+function switchMode() {
+  if (timer_status == "work") {
+    work2break();
   } else {
-    // rest -> work
-    timer_status = "work";
-    button.value = "Take a rest";
-    audio.pause();
-    if (calcTime(rest_timer) < 0) {
-      setTime(work_timer, calcTime(work_timer) - calcTime(rest_timer));
-      setTime(rest_timer, 0);
-    }
-    rest_timer.worker.postMessage(0);
-    work_timer.worker.postMessage(1);
-    total_working_timer.worker.postMessage(1);
-    addRow(table, createDateStr(), `Start ${get_task_str()}`);
+    break2Work();
   }
 }
