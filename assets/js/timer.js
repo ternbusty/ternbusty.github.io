@@ -125,6 +125,8 @@ function takeLunch() {
 }
 
 function start() {
+  audio.src = "/assets/uhazabu.mp3";
+  audio.play();
   addRow(table, createDateStr(), "Start today's job");
   work2break();
   document.getElementById("start").style.display = "none";
