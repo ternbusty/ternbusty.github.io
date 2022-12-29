@@ -98,6 +98,8 @@ function work2break() {
   total_working_timer.worker.postMessage(0);
   break_timer.worker.postMessage(1);
   addRow(table, createDateStr(), `Take a break`);
+  task_input.disabled = false;
+  task_input.style.background = "white";
 }
 
 function break2Work() {
@@ -113,6 +115,8 @@ function break2Work() {
   work_timer.worker.postMessage(1);
   total_working_timer.worker.postMessage(1);
   addRow(table, createDateStr(), `Start ${getTaskStr()}`);
+  task_input.disabled = true;
+  task_input.style.background = "#f0f0f0";
 }
 
 function takeLunch() {

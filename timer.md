@@ -61,8 +61,10 @@ tags: [JavaScript, Product]
 
 #start {
   font-size: 2vmax;
-  width: 400px;
+  width: 450px;
   padding: 10px;
+  border-radius: 20px;
+  /* letter-spacing: 0.05em; */
 }
 
 input {
@@ -106,6 +108,7 @@ input[type="button"] {
   margin-right: 20px;
   margin-left: 20px;
   margin-bottom: 20px;
+  border-radius: 6px;
 }
 
 table th {
