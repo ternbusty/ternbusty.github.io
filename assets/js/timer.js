@@ -86,17 +86,6 @@ function cntUp(timer) {
   processTime(timer, time + 1);
 }
 
-function takeLunch() {
-  timer_status = "break";
-  button.value = "Back to work";
-  setTime(break_timer, calcTime(break_timer) + 1800);
-  work_timer.worker.postMessage(0);
-  total_working_timer.worker.postMessage(0);
-  break_timer.worker.postMessage(1);
-  document.getElementById("take_lunch_button").style.display = "none";
-  addRow(table, createDateStr(), `Take a break`);
-}
-
 function getTaskStr() {
   let task_value = task_input.value;
   if (task_value === "") return "working";
@@ -124,6 +113,15 @@ function break2Work() {
   work_timer.worker.postMessage(1);
   total_working_timer.worker.postMessage(1);
   addRow(table, createDateStr(), `Start ${getTaskStr()}`);
+}
+
+function takeLunch() {
+  let new_break_time = calcTime(break_timer) + 1800;
+  setTime(break_timer, new_break_time);
+  if (new_break_time > 0) audio.pause();
+  if (timer_status === "break") break_timer.worker.postMessage(0);
+  work2break();
+  document.getElementById("take_lunch_button").style.display = "none";
 }
 
 function switchMode() {
