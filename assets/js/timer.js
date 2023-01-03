@@ -27,13 +27,15 @@ let summary_table = document.getElementById("summary_table");
 let timer_status = "break";
 
 function addRow(table, cell_text_array) {
-  var tr = table.insertRow(-1);
-  var th = document.createElement("th");
+  // let tbody = table.getElementsByTagName("tbody")[0];
+  // let tr = tbody.insertRow(-1);
+  let tr = table.insertRow(-1);
+  let th = document.createElement("th");
   th.innerHTML = cell_text_array[0];
   tr.appendChild(th);
   if (cell_text_array.length > 1) {
     for (let i = cell_text_array.length - 1; i >= 1; i--) {
-      var cell = tr.insertCell(1);
+      let cell = tr.insertCell(1);
       cell.innerHTML = cell_text_array[i];
     }
   }
@@ -156,7 +158,7 @@ function takeLunch() {
 function start() {
   audio.src = "/assets/uhazabu.mp3";
   audio.play();
-  addRow(history_table, [createDateStr(), "Start today's job"]);
+  addRow(history_table, [createDateStr(), "Start opening"]);
   work2break();
   document.getElementById("start").style.display = "none";
   document.getElementById("timer_main").style.display = "block";
@@ -171,11 +173,9 @@ function switchMode() {
   }
 }
 
-function convertTimeToHMSStr(time) {
+function convertTimeToHM(time) {
   let hms_array = convertTimeToHMS(time);
-  let hms_str = `${zero_padding(hms_array[0])}:${zero_padding(
-    hms_array[1]
-  )}:${zero_padding(hms_array[2])}`;
+  let hms_str = `${zero_padding(hms_array[0])}:${zero_padding(hms_array[1])}`;
   return hms_str;
 }
 
@@ -186,7 +186,7 @@ function createSummaryTable() {
   let current_break_time, total_break_time, total_job_time;
   current_break_time = total_break_time = total_job_time = 0;
   let summary_text = "";
-  addRow(summary_table, ["Start Date", "Job Name", "Work", "Break"]);
+  // addRow(summary_table, ["Start Date", "Job Name", "Work", "Break"]);
 
   for (var i = 0; i < history_table.rows.length; i++) {
     var date_str = history_table.rows[i].cells[0].innerText;
@@ -214,15 +214,15 @@ function createSummaryTable() {
           Date.parse(job_start_date_str) -
           current_break_time;
         total_job_time += current_job_time;
-        let hms_job_str = convertTimeToHMSStr(current_job_time / 1000);
-        let hms_break_str = convertTimeToHMSStr(current_break_time / 1000);
+        let job_hm_str = convertTimeToHM(current_job_time / 1000);
+        let break_hm_str = convertTimeToHM(current_break_time / 1000);
         addRow(summary_table, [
           job_start_date_str,
           job_name,
-          hms_job_str,
-          hms_break_str,
+          job_hm_str,
+          break_hm_str,
         ]);
-        summary_text += `${job_start_date_str}\t${job_name}\t${hms_break_str}\n`;
+        summary_text += `${job_start_date_str}\t${job_name}\t${job_hm_str}\t${break_hm_str}\n`;
       }
       // Start new job
       job_name = new_job_name;
@@ -230,12 +230,25 @@ function createSummaryTable() {
       current_break_time = 0;
     }
   }
+  total_job_hm_str = convertTimeToHM(total_job_time / 1000);
+  total_break_hm_str = convertTimeToHM(total_break_time / 1000);
   addRow(summary_table, [
     createDateStr(),
     "<b>Total</b>",
-    `<b>${convertTimeToHMSStr(total_break_time / 1000)}</b>`,
-    `<b>${convertTimeToHMSStr(total_job_time / 1000)}</b>`,
+    `<b>${total_job_hm_str}</b>`,
+    `<b>${total_break_hm_str}</b>`,
   ]);
+  summary_text += `${createDateStr()}\tTotal\t${total_job_hm_str}\t${total_break_hm_str}\n`;
+  document.summary_text = summary_text;
+}
+
+function copy() {
+  // console.log("hoge");
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(document.summary_text);
+  }
+  document.getElementById("copy").getElementsByTagName("i")[0].className =
+    "fas fa-check";
 }
 
 function summerize() {
@@ -247,7 +260,10 @@ function summerize() {
   // Add summerize header
   let summarize_button = document.getElementById("summarize");
   let summary_header = document.getElementById("summary_header");
-  summary_header.innerHTML = "<h2>Summary</h2>";
+  summary_header.innerHTML =
+    '<h2>Summary <button id="copy" onclick="copy()"><i class="far fa-clipboard"></i></button></h2>';
+  // '<h2>Summary <button aria-label="copy" data-title-succeed="Copied!" data-original-title="" title=""><i class="far fa-clipboard"></i></button></h2>';
+  document.getElementById("summary_table_wrapper").style.visibility = "visible";
   // Hide or disable elements
   summarize_button.style.display = "none";
   document.getElementById("take_lunch_button").disabled = true;

@@ -56,44 +56,52 @@ tags: [JavaScript, Product]
 </div>
 
 <div id="summary">
-<div id="summary_header"></div>
+<div id="summary_header">
+<!-- <h2>Summary <button id="copy"><i class="far fa-clipboard"></i></button></h2> -->
+</div>
 <input id="summarize" type="button" value="Summerize" onclick="summerize()">
-<div class="table-wrapper"><table id="summary_table">
+</div>
+<div class="table-wrapper" id="summary_table_wrapper"><table id="summary_table">
+  <!-- <thead><tr><th>Start Date</th><td class="task_name">Job Name</td><td>Work</td><td>Break</td></tr></thead> -->
   <tbody>
+  <tr><th>Start Date</th><td class="task_name">Job Name</td><td>Work</td><td>Break</td></tr>
   </tbody>
 </table></div>
-</div>
 
 <script type="text/javascript" src="./assets/js/timer.js"></script>
 
 <style>
-#timer_main {
-  display: none;
-}
-
-#summary {
-  display: none;
+#prompt, #task, #buttons, #history, #summary {
   text-align: center;
 }
 
-#prompt {
+#timer_main, #long_break_timer, #summary {
+  display: none;
+}
+
+#summary_table_wrapper {
+  visibility: hidden;
+}
+
+#forms {
+  margin-top: 20px;
   text-align: center;
 }
 
 #start {
-  font-size: 2vmax;
+  /* font-size: 2vmax; */
+  font-size: 20px;
   width: 450px;
-  height: 100px;
-  padding: 10px;
-  border-radius: 20px;
+  height: 50px;
+  /* padding: 10px; */
+  border-radius: 6px;
 }
 
-#long_break_timer {
-  display: none;
-}
-
-input {
+#copy {
+  background: none;
   border: none;
+  color: gray;
+  font-size: 90%;
 }
 
 form {
@@ -101,8 +109,15 @@ form {
   color: gray;
 }
 
+input {
+  border: none;
+}
+
 input[type="text"] {
-  width: 75%;
+  min-width: 75%;
+  max-width: 90%;
+  margin-right: 20px;
+  margin-left: 20px;
   font-size: 20px;
   background: none;
   text-align: center;
@@ -112,7 +127,7 @@ input[type="text"] {
   height: 50px;
 }
 
-input[type="text"]:focus {
+input:focus, button:focus {
   outline: none;
 }
 
@@ -138,33 +153,31 @@ input[type="button"] {
   border-radius: 6px;
 }
 
+.task_name {
+  width: 50%;
+}
+
 table th {
-  padding-left: 20px;
-  width:30%;
-}
-
-#task {
-  text-align: center;
-}
-
-#buttons {
-  text-align: center;
-}
-
-#forms {
-  margin-top: 20px;
-  text-align: center;
-}
-
-#history {
-  text-align: center;
+  padding-left: 10px;
+  width: 23%;
 }
 
 table {
+  word-wrap: break-word;
   margin-top: 20px;
   margin-left: auto;
   margin-right: auto;
-  width: 75%;
+  width: 90%;
+}
+
+.table-wrapper>table tbody tr td{
+  white-space: normal;
+}
+
+@media (min-width: 520px) {
+  table {
+    table-layout: fixed;
+  }
 }
 
 </style>
