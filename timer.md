@@ -19,7 +19,7 @@ tags: [JavaScript, Product]
 
 <div id="buttons">
 <input id="switch_mode_button" type="button" value="Start working" onclick="switchMode()">
-<input id="take_lunch_button" type="button" value="Take a 30 min break" onclick="takeLunch()">
+<input id="take_long_break_button" type="button" value="Take a 30 min break" onclick="takeLongBreak()">
 </div>
 
 <div id="forms">
@@ -57,18 +57,16 @@ tags: [JavaScript, Product]
 
 <div id="summary">
 <div id="summary_header">
-<!-- <h2>Summary <button id="copy"><i class="far fa-clipboard"></i></button></h2> -->
 </div>
 <input id="summarize" type="button" value="Summerize" onclick="summerize()">
 </div>
 <div class="table-wrapper" id="summary_table_wrapper"><table id="summary_table">
-  <!-- <thead><tr><th>Start Date</th><td class="task_name">Job Name</td><td>Work</td><td>Break</td></tr></thead> -->
   <tbody>
   <tr><th>Start Date</th><td class="task_name">Job Name</td><td>Work</td><td>Break</td></tr>
   </tbody>
 </table></div>
 
-<script type="text/javascript" src="./assets/js/timer.js"></script>
+<script type="module" src="./assets/js/timer/timer.js"></script>
 
 <style>
 #prompt, #task, #buttons, #history, #summary {
@@ -89,11 +87,9 @@ tags: [JavaScript, Product]
 }
 
 #start {
-  /* font-size: 2vmax; */
   font-size: 20px;
   width: 450px;
   height: 50px;
-  /* padding: 10px; */
   border-radius: 6px;
 }
 
