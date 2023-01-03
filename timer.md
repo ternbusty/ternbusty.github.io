@@ -58,7 +58,7 @@ tags: [JavaScript, Product]
 <div id="summary">
 <div id="summary_header">
 </div>
-<input id="summarize" type="button" value="Summerize" onclick="summerize()">
+<input id="summarize" type="button" value="Summarize" onclick="summerize()">
 </div>
 <div class="table-wrapper" id="summary_table_wrapper"><table id="summary_table">
   <tbody>

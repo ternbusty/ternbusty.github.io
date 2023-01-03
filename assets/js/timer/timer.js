@@ -130,6 +130,7 @@ window.summerize = function () {
   window.work_timer.worker.postMessage(0);
   window.total_working_timer.worker.postMessage(0);
   window.long_break_timer.worker.postMessage(0);
+  audio.pause();
   // Add summerize header
   let summarize_button = document.getElementById("summarize");
   let summary_header = document.getElementById("summary_header");
