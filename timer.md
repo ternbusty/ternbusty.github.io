@@ -39,10 +39,26 @@ tags: [JavaScript, Product]
 </form>
 </div>
 
+<div id="long_break_timer">
+<h2>Long Break Timer</h2>
+<form name="long_break_timer">
+<input type="number" value=5 readonly>:<input type="number" value=0 readonly>:<input type="number" value=0 readonly>
+</form>
+</div>
+
 <div id="history">
 <h2>History</h2>
 </div>
 <div class="table-wrapper"><table id="history_table">
+  <tbody>
+  </tbody>
+</table></div>
+</div>
+
+<div id="summary">
+<div id="summary_header"></div>
+<input id="summarize" type="button" value="Summerize" onclick="summerize()">
+<div class="table-wrapper"><table id="summary_table">
   <tbody>
   </tbody>
 </table></div>
@@ -55,6 +71,11 @@ tags: [JavaScript, Product]
   display: none;
 }
 
+#summary {
+  display: none;
+  text-align: center;
+}
+
 #prompt {
   text-align: center;
 }
@@ -62,9 +83,13 @@ tags: [JavaScript, Product]
 #start {
   font-size: 2vmax;
   width: 450px;
+  height: 100px;
   padding: 10px;
   border-radius: 20px;
-  /* letter-spacing: 0.05em; */
+}
+
+#long_break_timer {
+  display: none;
 }
 
 input {
@@ -78,12 +103,13 @@ form {
 
 input[type="text"] {
   width: 75%;
-  font-size: 1.2vmax;
+  font-size: 20px;
   background: none;
   text-align: center;
   border: 1px solid #aaa;
   margin-bottom: 40px;
   border-radius:6px;
+  height: 50px;
 }
 
 input[type="text"]:focus {
@@ -102,7 +128,8 @@ input[type="number"] {
 }
 
 input[type="button"] {
-  font-size: 1.2vmax;
+  font-size: 20px;
+  height: 50px;
   width: 300px;
   max-width: 90%;
   margin-right: 20px;
@@ -133,7 +160,7 @@ table th {
   text-align: center;
 }
 
-#history_table {
+table {
   margin-top: 20px;
   margin-left: auto;
   margin-right: auto;
