@@ -1,6 +1,10 @@
 import * as dt from "./utils/datetime.js";
 import * as tb from "./utils/table.js";
 
+window.onbeforeunload = function (e) {
+  e.returnValue = "Are you leaving this site?";
+};
+
 window.switch_button = document.getElementById("switch_mode_button");
 window.task_input = document.getElementById("task_input");
 window.history_table = document.getElementById("history_table");
@@ -144,7 +148,10 @@ window.summerize = function () {
   window.task_input.disabled = true;
   // Add to tables
   tb.addRow(window.history_table, [dt.createDateStr(), `End today's job`]);
-  document.summary_text = tb.createSummary(window.history_table, window.summary_table);
+  document.summary_text = tb.createSummary(
+    window.history_table,
+    window.summary_table
+  );
 };
 
 window.copy = function () {
