@@ -11,8 +11,14 @@ tags: [JavaScript, Product]
 <script src="https://kit.fontawesome.com/ddf1feedf5.js" crossorigin="anonymous"></script>
 </head>
 
-<script type="text/javascript" src="/assets/js/youtube.js"></script>
+<div id="how-to-use">
+<input id="id_input" type="text" placeholder="Type your playlist ID">
 
+<input type="button" value="Random" onclick="redirect('random')">
+<input type="button" value="Reverse" onclick="redirect('reverse')">
+</div>
+
+<div id="youtube">
 <html>
   <body>
     <div id="player"></div>
@@ -23,3 +29,6 @@ tags: [JavaScript, Product]
   <tbody>
   </tbody>
 </table></div>
+</div>
+
+<script type="text/javascript" src="/assets/js/youtube.js"></script>

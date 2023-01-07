@@ -16,3 +16,62 @@ table {
 .body {
   scrollbar-width: none;
 }
+
+#how-to-use {
+  text-align: center;
+}
+
+#youtube {
+  display: none;
+}
+
+input {
+  border: none;
+}
+
+input[type="text"] {
+  min-width: 75%;
+  max-width: 90%;
+  margin-right: 20px;
+  margin-left: 20px;
+  font-size: 20px;
+  background: none;
+  text-align: center;
+  border: 1px solid #aaa;
+  margin-bottom: 40px;
+  border-radius: 6px;
+  height: 50px;
+}
+
+input:focus,
+button:focus {
+  outline: none;
+}
+
+input[type="text"]:focus::placeholder {
+  opacity: 0;
+}
+
+input[type="button"] {
+  font-size: 20px;
+  height: 50px;
+  width: 300px;
+  max-width: 90%;
+  margin-right: 20px;
+  margin-left: 20px;
+  margin-bottom: 20px;
+  border-radius: 6px;
+}
+
+.table-wrapper > table tbody tr td {
+  white-space: normal;
+}
+
+table {
+  word-wrap: break-word;
+  /* margin-top: 20px; */
+}
+
+table th {
+  padding-left: 10px;
+}

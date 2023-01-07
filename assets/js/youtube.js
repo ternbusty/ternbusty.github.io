@@ -1,20 +1,46 @@
-function process_input(message) {
-  let playlist_id = window.prompt(message, "");
-  console.log(playlist_id);
-  if ((playlist_id !== "") & (playlist_id !== null))
-    window.location.href =
-      "https://ternbusty.github.io/youtube.html?" + playlist_id;
-  else process_input("不正なプレイリスト ID です。正しい値を入力してください");
+function isValidURL(url) {
+  var parser = new URL(url);
+  if (
+    !parser.searchParams.has("playlist_id") ||
+    !parser.searchParams.has("type")
+  ) {
+    return false;
+  }
+  let type = parser.searchParams.get("type");
+  if (type !== "random" && type !== "reverse") {
+    return false;
+  }
+  return true;
 }
 
-// Process URL
-let loc = window.location.href;
-let splitted_href = loc.split("?");
-if (loc === splitted_href[0]) {
-  // If no '?' in URL
-  process_input("プレイリスト ID を入力してください");
+function displayInvalidMessage() {
+  window.alert("Invalid query parameters. Please try again.");
+  document.getElementById("youtube").style.display = "none";
+  document.getElementById("how-to-use").style.display = "block";
 }
 
+function processURL() {
+  let url = window.location.href;
+  let splitted = url.split("?");
+  if (url === splitted[0]) {
+    // If no '?' in URL
+    return;
+  }
+  if (!isValidURL(url)) {
+    displayInvalidMessage();
+    return;
+  }
+  document.getElementById("how-to-use").style.display = "none";
+  document.getElementById("youtube").style.display = "block";
+}
+
+function redirect(type) {
+  let playlist_id = document.getElementById("id_input").value;
+  window.location.href = `https://ternbusty.github.io/youtube.html?type=${type}&playlist_id=${playlist_id}`;
+  // window.location.href = `http://localhost:4000/youtube.html?type=${type}&playlist_id=${playlist_id}`;
+}
+
+processURL();
 // Load YouTube API
 let tag = document.createElement("script");
 tag.src = "https://www.youtube.com/iframe_api";
@@ -35,16 +61,22 @@ function onYouTubeIframeAPIReady() {
 }
 
 function onPlayerReady(event) {
+  document.not_found_cnt = 0;
   let id = setInterval(() => {
     if (document.id_arr && document.id_arr[0] !== undefined) {
       console.log("found");
       clearInterval(id);
       event.target.yts.loadVideoByCnt(event.target, 0);
     } else if (document.failflag === 1) {
-      process_input("不正なプレイリスト ID です。正しい値を入力してください");
+      displayInvalidMessage();
       clearInterval(id);
     } else {
       console.log("not found");
+      document.not_found_cnt++;
+      if (document.not_found_cnt++ > 5) {
+        console.log("Please install tampermonkey script");
+        clearInterval(id);
+      }
     }
   }, 1000);
 }
