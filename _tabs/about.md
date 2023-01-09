@@ -1,7 +1,7 @@
 ---
 title: About
 icon: fas fa-info-circle
-order: 4
+order: 5
 ---
 
 ## Work experience
@@ -128,6 +128,14 @@ order: 4
 - おそらく IBM の電子カルテにしか対応していない
 
 ### その他
+
+**[Modified Pomodoro Technique](https://ternbusty.github.io/timer.html)** <span class="language-tag my-purple">JavaScript</span>
+- 休憩の前借り・借金制度を導入したポモドーロタイマー
+- 詳細は [こちら](https://ternbusty.github.io/posts/modified-pomodoro/)
+
+**[YouTube Playlist Player](https://ternbusty.github.io/youtube.html)** <span class="language-tag my-purple">JavaScript</span>
+- YouTube の再生リストをシャッフル / 逆順再生するツール
+- 詳細は [こちら](https://ternbusty.github.io/posts/playlist-player/)
 
 **[誕生日お祝い用シェルスクリプト](https://qiita.com/ternbusty/items/c6c0c0cd5d67a470eb6a)** <span class="language-tag my-gray">C</span> <span class="language-tag my-green">ShellScript</span>
 
