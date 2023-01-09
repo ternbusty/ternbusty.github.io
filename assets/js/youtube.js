@@ -7,7 +7,7 @@ function isValidURL(url) {
     return false;
   }
   let type = parser.searchParams.get("type");
-  if (type !== "random" && type !== "reverse") {
+  if (type !== "random" && type !== "reverse" && type !== "normal") {
     return false;
   }
   return true;
