@@ -103,7 +103,7 @@ function break2Work() {
 window.start = function () {
   audio.src = "/assets/uhazabu.mp3";
   audio.play();
-  tb.addRow(window.history_table, [dt.createDateStr(), "Start opening"]);
+  tb.addRow(window.history_table, [dt.createDateStr(), "Start Opening"]);
   work2break();
   document.getElementById("start").style.display = "none";
   document.getElementById("timer_main").style.display = "block";
