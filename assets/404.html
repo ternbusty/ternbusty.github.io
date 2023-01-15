@@ -20,7 +20,7 @@ dynamic_title: true
   {%- endcapture -%}
 
   {%- capture _archives_page -%}
-    <a href="{{ 'archives' | relative_url }}">{{ site.data.locales[lang].not_found.archives_page }}</a>
+    <a href="{{ 'archives' | relative_url }}.html">{{ site.data.locales[lang].not_found.archives_page }}</a>
   {%- endcapture -%}
 
   <p>{{site.data.locales[lang].not_found.statment }}</p>

@@ -33,7 +33,7 @@
 
         {% elsif page.layout == 'category' or page.layout == 'tag' %}
           <span>
-            <a href="{{ item | relative_url }}">
+            <a href="{{ item | relative_url }}.html">
               {{ site.data.locales[lang].tabs[item] | default: page.title }}
             </a>
           </span>
