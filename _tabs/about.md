@@ -58,17 +58,17 @@ order: 5
 
 ### 低レイヤ関連
 
-**[Jack 言語のアセンブラ・コンパイラ自作](https://ternbusty.github.io/tags/nand2tetris/,)** <span class="language-tag my-orange">Python</span> <span class="language-tag my-gray">Assembly</span>
+**[Jack 言語のアセンブラ・コンパイラ自作](https://ternbusty.github.io/tags/nand2tetris.html)** <span class="language-tag my-orange">Python</span> <span class="language-tag my-gray">Assembly</span>
 - [コンピュータシステムの理論と実装](https://www.oreilly.co.jp/books/9784873117126/) を参考に、Python を用いて実装した
 - アセンブラ・コンパイラが動作するアーキテクチャそのものも HDL を用いて自作した
 
 ### ネットワーク関連
 
-**[自宅ネットワークを Grafana でモニタリング](https://ternbusty.github.io/tags/raspy-grafana/)** <span class="language-tag my-orange">Python</span>
+**[自宅ネットワークを Grafana でモニタリング](https://ternbusty.github.io/tags/raspy-grafana.html)** <span class="language-tag my-orange">Python</span>
 - Raspberry Pi で自宅ネットワークのパケットキャプチャを行ったうえで、IP アドレスから通信先 web サービスを特定し Grafana で可視化した
 - ポートミラーリング機能付きスイッチおよび無線 LAN アクセスポイントを用いて、全てのパケットが Raspberry Pi に届くように工夫した
 
-**[Wi-Fi 打刻システムの構築](https://ternbusty.github.io/posts/wifi-checkin/)** <span class="language-tag my-orange">Python</span>
+**[Wi-Fi 打刻システムの構築](https://ternbusty.github.io/posts/wifi-checkin.html)** <span class="language-tag my-orange">Python</span>
 - 職場に打刻システムがないため、自分の帰宅時刻を記録することにより時間外勤務の実態を把握しようという試み
 - パケットキャプチャを行うことにより iPhone が自宅ネットワークに接続されているかどうかを判定。これを用いて出勤や帰宅を検知し、Slack へ通知した
 
@@ -79,12 +79,12 @@ order: 5
 - 冬場に布団から出られないため, RaspberryPi とモータを用いて布団を引きはがす機械を製作した
 - RaspberryPi は web サーバとして運用し, スマートフォンからの時刻設定を可能にした
 
-**[IoT を使って毎朝風呂に入らざるを得ないようにする](https://ternbusty.github.io/posts/take-a-bath/)** <span class="language-tag my-orange">Python</span>
+**[IoT を使って毎朝風呂に入らざるを得ないようにする](https://ternbusty.github.io/posts/take-a-bath.html)** <span class="language-tag my-orange">Python</span>
 
 - 毎朝決まった時間に風呂場の湿度を一定以上にしないと、部屋の電気が永遠に点滅し続ける
 - Nature Remo と SwitchBot 湿度計を RaspberryPi で制御
 
-**[IoT を使って毎朝体重を測らざるを得ないようにする](https://ternbusty.github.io/posts/measure-weight/)** <span class="language-tag my-orange">Python</span>
+**[IoT を使って毎朝体重を測らざるを得ないようにする](https://ternbusty.github.io/posts/measure-weight.html)** <span class="language-tag my-orange">Python</span>
 
 - 毎朝決まった時間にその日の体重が計測されていないと、心停止のときに作動するアラームが延々と鳴り続ける
 - スマート体重計 (Withings Body) からサーバへアップロードされた体重データを、Raspberry Pi から API 経由で取得
@@ -104,17 +104,17 @@ order: 5
 - [東京版](https://twitter.com/tokyo__weather) もあり
 
 ### ウェブサイト
-**[SCP Network Wiki](https://ternbusty.github.io/scp_network_wiki/)** <span class="language-tag my-orange">Python</span>
+**[SCP Network Wiki](https://ternbusty.github.io/scp_network_wiki.html)** <span class="language-tag my-orange">Python</span>
 - [SCP Foundation](https://scp-wiki.wikidot.com/) および [SCP 財団](http://scp-jp.wikidot.com/) をスクレイピングし、各 SCP や tale の引用・被引用関係を可視化するサイト。Jekyll を用いて構築した
 - [ネットワークの可視化](https://ternbusty.github.io/scp_network_wiki/visualization/SCP%20network%20visualization.html) 部分には、[Flourish network chart](https://app.flourish.studio/@flourish/network-graph) を用いている
 
 **[オモコロチャンネルサーチ](https://omoch.net/)** <span class="language-tag my-orange">Python</span> <span class="language-tag my-green">ShellScript</span>
 - [オモコロチャンネル](https://www.youtube.com/c/omocorochannel) をキーワード検索するサービス。Wordpress を用いて構築した
-- データは YouTube Data API を用いて取得。新規動画データの Wordpress への追加も含め完全な自動化を行った。構築についての記事は [こちら](https://ternbusty.github.io/posts/omoch/)
+- データは YouTube Data API を用いて取得。新規動画データの Wordpress への追加も含め完全な自動化を行った。構築についての記事は [こちら](https://ternbusty.github.io/posts/omoch.html)
 
 ### 医学関連
 
-**[血ガス自動判定ツール](https://ternbusty.github.io/posts/gas/)** <span class="language-tag my-purple">JavaScript</span>
+**[血ガス自動判定ツール](https://ternbusty.github.io/posts/gas.html)** <span class="language-tag my-purple">JavaScript</span>
 
 - 血ガスの結果を入力すると解釈と考えられる病態を出力する web フォーム
 
@@ -131,11 +131,11 @@ order: 5
 
 **[Modified Pomodoro Technique](https://ternbusty.github.io/timer.html)** <span class="language-tag my-purple">JavaScript</span>
 - 休憩の前借り・借金制度を導入したポモドーロタイマー
-- 詳細は [こちら](https://ternbusty.github.io/posts/modified-pomodoro/)
+- 詳細は [こちら](https://ternbusty.github.io/posts/modified-pomodoro.html)
 
 **[YouTube Playlist Player](https://ternbusty.github.io/youtube.html)** <span class="language-tag my-purple">JavaScript</span>
 - YouTube の再生リストをシャッフル / 逆順再生するツール
-- 詳細は [こちら](https://ternbusty.github.io/posts/playlist-player/)
+- 詳細は [こちら](https://ternbusty.github.io/posts/playlist-player.html)
 
 **[誕生日お祝い用シェルスクリプト](https://qiita.com/ternbusty/items/c6c0c0cd5d67a470eb6a)** <span class="language-tag my-gray">C</span> <span class="language-tag my-green">ShellScript</span>
 
@@ -145,7 +145,7 @@ order: 5
 
 - Twitter API を叩いて「自分がフォローしているアカウント、およびそれらがフォローしているアカウント」を走査し、フォロー外鍵垢のフォロワーを探す
 
-**[Amazon Prime Video の Watch Party でチャット履歴を保存する](https://ternbusty.github.io/posts/watch-party/)** <span class="language-tag my-purple">JavaScript</span>
+**[Amazon Prime Video の Watch Party でチャット履歴を保存する](https://ternbusty.github.io/posts/watch-party.html)** <span class="language-tag my-purple">JavaScript</span>
 
 - Amazon Prime Video の Watch Party のチャット履歴が保存されないため、チャットウィンドウ内をスクレイピングして会話記録をダウンロードできるようにする
 

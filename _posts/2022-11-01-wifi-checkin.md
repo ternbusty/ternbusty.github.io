@@ -41,7 +41,7 @@ tags: [Python, Raspberry Pi, Product]
 
 ### 自宅ネットワーク内で iPhone からのパケットをキャプチャする
 
-上記の議論を踏まえ、今回は 2-2 の方針を採用することにした。[以前の記事](https://ternbusty.github.io/posts/raspy-grafana-1/)で作成した図を再掲するが、我が家のネットワーク構成は以下のようになっており、iPhone → アクセスポイント → ポートミラーリング機能付きスイッチ → Raspberry Pi という流れでパケットキャプチャができるのである。
+上記の議論を踏まえ、今回は 2-2 の方針を採用することにした。[以前の記事](https://ternbusty.github.io/posts/raspy-grafana-1.html)で作成した図を再掲するが、我が家のネットワーク構成は以下のようになっており、iPhone → アクセスポイント → ポートミラーリング機能付きスイッチ → Raspberry Pi という流れでパケットキャプチャができるのである。
 
 ![network-map](../../assets/img/wifi-checkin/network-map.png)
 
