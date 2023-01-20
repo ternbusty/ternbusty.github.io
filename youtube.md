@@ -16,7 +16,7 @@ tags: [JavaScript, Product]
 <summary>How To Use</summary>
 <ol>
   <li>Install <a href="https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=ja">Tampermonkey</a> to your chrome browser</li>
-  <li>Install <a href="https://gist.github.com/ternbusty/373d3d88ddfd690ae454715f377c283b/raw/ff1d87d02cd39c67bb4502f1a69d9cc425674fb6/youtube.user.js">this script</a></li>
+  <li>Install <a href="https://gist.github.com/ternbusty/373d3d88ddfd690ae454715f377c283b/raw/youtube.user.js">this script</a></li>
   <li>Reload this page</li>
 </ol>
 <p style="text-indent:1rem">For more details, see <a href="https://ternbusty.github.io/posts/playlist-player.html">this article</a></p>

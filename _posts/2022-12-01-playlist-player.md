@@ -11,7 +11,7 @@ tags: [JavaScript, Product]
 - 環境: 拡張機能 Tampermonkey のインストールが可能なブラウザ (PC 上からの閲覧を想定)
 - 使い方:
   1. 拡張機能 [Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=ja) をインストール
-  2. [Userscript](https://gist.github.com/ternbusty/373d3d88ddfd690ae454715f377c283b/raw/e39a92854d02399efd2aecca0e92a5c8c8dda70e/youtube.user.js) をインストール
+  2. [Userscript](https://gist.github.com/ternbusty/373d3d88ddfd690ae454715f377c283b/raw/youtube.user.js) をインストール
   3. [本ツール](https://ternbusty.github.io/youtube.html) にアクセス
   4. プレイリスト ID を入力し、Normal (通常再生) か Reverse (逆順) か Random (シャッフル) をクリック 
 - スクリーンショット
@@ -43,7 +43,7 @@ tags: [JavaScript, Product]
 - 1-1. 普通に YouTube Data API を利用する
 - 1-2. プレイリストのウェブサイトにアクセスし、スクレイピングする
 
-1-1 についてはおそらく私が発行した API key を使うことになるが、Rate Limit があるので万が一ユーザが増えた場合大変な事態になること、他ユーザがこのサービスを利用した場合に (当然ながら) 当該ユーザが作成した非公開プレイリストの情報を取得できないこと、などの問題がある。なので今回は 1-2 の方法を採用することにした。1-2 をブラウザ上にて JavaScript を利用して実行すると CORS を踏むので、Tampermonkey を利用してユーザスクリプトで行うことにした。
+1-1 についてはおそらく私が発行した API key を使うことになるが、Rate Limit があるので万が一ユーザが増えた場合大変な事態になること、他ユーザがこのサービスを利用した場合に (当然ながら) 当該ユーザが作成した非公開プレイリストの情報を取得できないこと、などの問題がある。なので今回は 1-2 の方法を採用することにした。1-2 をブラウザ上にて JavaScript を利用して実行すると CORS を踏むので、Tampermonkey を利用してユーザスクリプト (ソースコードは [こちら](https://gist.github.com/ternbusty/373d3d88ddfd690ae454715f377c283b)) で行うことにした。
 
 ```javascript
 function makeGetRequest(url) {
@@ -87,7 +87,7 @@ async function getVideoID(playlist_id, index){
 ```
 
 ### 動画を再生する
-動画の再生に関しては、YouTube により提供されている [IFrame Player API](https://developers.google.com/youtube/iframe_api_reference) を用いることとした。この API 自体にもプレイリスト内の動画を順番に再生する機能がついているものの、仕様上 200 個の動画しか読み込みできないようなので今回は使用しなかった。Player にイベントリスナーを追加したうえで、動画の再生終了が検知されたタイミングで次の動画を読み込むようにした。
+動画の再生に関しては、YouTube により提供されている [IFrame Player API](https://developers.google.com/youtube/iframe_api_reference) を用いることとした。この API 自体にもプレイリスト内の動画を順番に再生する機能がついているものの、仕様上 200 個の動画しか読み込みできないようなので今回は使用しなかった。Player にイベントリスナーを追加したうえで、動画の再生終了が検知されたタイミングで次の動画を読み込むようにした。ソースコードは [こちら](https://github.com/ternbusty/ternbusty.github.io/blob/main/assets/js/youtube.js)。
 
 ```javascript
 let tag = document.createElement("script");
