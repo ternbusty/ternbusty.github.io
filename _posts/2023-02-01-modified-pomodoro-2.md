@@ -1,6 +1,6 @@
 ---
 layout: post
-title: ダラダラしていると自動的に鬼電がかかってくるシステムの構築
+title: ポモドーロ変法タイマーの実装 (2)
 date: 2023-02-01
 categories: [Technology, Web]
 tags: [JavaScript, Python, Product, Pomodoro]
@@ -8,7 +8,7 @@ tags: [JavaScript, Python, Product, Pomodoro]
 
 ## 動機
 
-[前回記事](https://ternbusty.github.io/posts/modified-pomodoro.html) ではブラウザ上で動くポモドーロ変法 (筆者が勝手に命名した) を実装したわけだが、末尾に課題として記したように
+[前回記事](https://ternbusty.github.io/posts/modified-pomodoro-1.html) ではブラウザ上で動くポモドーロ変法 (筆者が勝手に命名した) を実装したわけだが、末尾に課題として記したように
 
 - 端末自体がスリープされるとカウントダウン自体がストップしてしまう
 - 休憩可能時間をオーバーした際、アラームが鳴っていたとしても離席中やそもそもブラウザを開いていないタイミングでは気づくことができない
@@ -27,13 +27,14 @@ tags: [JavaScript, Python, Product, Pomodoro]
 - タイマーの残り時間やタスクの履歴はすべてバックエンドで管理する方針とした。一応タイマーなのでフロントエンドの方では 1 秒おきに表示を更新したいものの、バックエンドに対して 1 秒おきにリクエストを送って同期するのもそれはそれでどうなんだというところではある (いいアイデアがあったら誰か教えてください)。結局、フロントエンドの方では前回記事同様自律的に ticktock してタイマーが動いている雰囲気を出していただき、適宜バックエンドと同期して表示を更新するような実装になった。
 - FastAPI さんが自動生成してくれた document を以下に載せておく。
 
-![fastapi](../../assets/img/pomodoro-raspy/fastapi.png)
+![fastapi](../../assets/img/pomodoro2/fastapi.png)
 
 - 状態の取得
-  - 休憩タイマーが負の値になっている (つまり、休憩可能時間を過ぎて休憩してしまっている) 状態を `lazy` と定義し、`is_lazy` で lazy かどうかの bool を返す方針とした。
+  - タイマーの状態 (status) は not_started, work, break, finished, pause の 5 種類とし、タイマーの残り時間やタスクの名前も合わせて `/status/` で取得できるようにした。
+  - 休憩タイマーが負の値になっている (つまり、休憩可能時間を過ぎて休憩してしまっている) 状態を `lazy` と定義し、`/is_lazy/` で lazy かどうかの bool を返す方針とした。
   - 食事休憩を考慮して `Take a 30 min break` というボタンをフロントエンド側で用意しているのだが、むやみに押されると困るので、一度実行されたら 6 時間は `can_take_long_break` が偽を返すようにしておいた。長い休憩を取ろうとした際にこれが偽だと拒否される設計。
 - タイマーの操作
-  - `PUT` を用いてタイマーの status (not_started, work, break, finished) を切り替えるようにした。これ `PUT` でよかったのか？
+  - `PUT` を用いてタイマーの status を切り替えるようにした。これ `PUT` でよかったのか？
   - 普通に while 文とかを用いて ticktock させる処理を書くと、タイマーをスタートさせる `start` への応答が終了していないとみなされてハングしまうため、以下のように background で動作させる方針とした。
 
     ```python
@@ -42,9 +43,10 @@ tags: [JavaScript, Python, Product, Pomodoro]
         background_tasks.add_task(timer.main, break_time)
     ```
 
-  - 既にタイマーが動作している状態で `start` へアクセスが来るとバックグラウンドタスクが二重に起動して時間が二倍の速さで進むようになるため、`start` へのアクセスがあった場合はタイマーの status を確認してからスタートさせる必要が生じた。
+  - 既にタイマーが動作している状態で `start` へアクセスされるとバックグラウンドタスクが二重に起動して時間が二倍の速さで進むようになるため、`start` へのアクセスがあった場合はタイマーの status を確認し、既に動作しているときは無視する方針とした。
+  - 外出などで一時的にタイマーを止めたいとき用に `pause` メソッドも用意しておいた。 
 
-- 以上を実装したうえで、FastAPI を RaspberryPi 上で起動しておく。
+- 以上を実装したうえで、FastAPI を RaspberryPi 上で起動しておく。リクエストが失敗したときそれを伝える応答も何も用意しておらず API の設計としてやばすぎるが、とりあえず動く用にはなった。
 
   ```bash
   uvicorn main:app --reload --host 0.0.0.0 --port 8080
@@ -71,5 +73,5 @@ tags: [JavaScript, Python, Product, Pomodoro]
 
 ## 今後の課題
 タイマーで lazy 判定されていれば自分に鬼電をかけられるとはいえ、
-- そもそもタイマーを作動させるのを怠ったら終わりである。帰宅したら (ちょっとはのんびりしていいよという気持ちを込めて初期休憩時間 15 分くらいで) 自動的に、あるいは何らか自然な方法でタイマーをスタートさせる仕組みが必要と考えられる。これには以前構築した [Wi-Fi 打刻システムの構築](https://ternbusty.github.io/posts/wifi-checkin.html) を利用できるかもしれない。
 - 根本的な話になるが、タイマーの status を work にしたままダラダラされたら今回の試みは何の意味もなさなくなる。これについては、例えば status が work になっている場合は (ダラダラする元凶であるところの) SNS の閲覧をできないようにするなどの制限が有効かもしれない。
+- そもそもタイマーを作動させるのを怠ったら終わりである。帰宅したら自動的に、あるいは何らか自然な方法でタイマーをスタートさせる仕組みが必要と考えられる。これには以前構築した [Wi-Fi 打刻システムの構築](https://ternbusty.github.io/posts/wifi-checkin.html) を利用できるかもしれない。

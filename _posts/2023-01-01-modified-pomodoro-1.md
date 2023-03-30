@@ -1,9 +1,9 @@
 ---
 layout: post
-title: ポモドーロ変法タイマーの実装
+title: ポモドーロ変法タイマーの実装 (1)
 date: 2023-01-01
 categories: [Technology, Web]
-tags: [JavaScript, Product]
+tags: [JavaScript, Product, Pomodoro]
 ---
 
 ## 動機
