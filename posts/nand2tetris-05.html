@@ -1,0 +1,175 @@
+<!DOCTYPE html><html lang="en" ><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><meta name="day-prompt" content="days ago"><meta name="hour-prompt" content="hours ago"><meta name="minute-prompt" content="minutes ago"><meta name="justnow-prompt" content="just now"><meta name="generator" content="Jekyll v4.2.1" /><meta property="og:title" content="コンピュータシステムの理論と実装 (5)" /><meta property="og:locale" content="en" /><meta name="description" content="5 章 コンピュータアーキテクチャ" /><meta property="og:description" content="5 章 コンピュータアーキテクチャ" /><link rel="canonical" href="https://ternbusty.github.io/posts/nand2tetris-05.html" /><meta property="og:url" content="https://ternbusty.github.io/posts/nand2tetris-05.html" /><meta property="og:site_name" content="ternbusty" /><meta property="og:type" content="article" /><meta property="article:published_time" content="2022-01-05T00:00:00+09:00" /><meta name="twitter:card" content="summary" /><meta property="twitter:title" content="コンピュータシステムの理論と実装 (5)" /><meta name="twitter:site" content="@ternbusty" /> <script type="application/ld+json"> {"headline":"コンピュータシステムの理論と実装 (5)","dateModified":"2022-01-09T20:29:04+09:00","datePublished":"2022-01-05T00:00:00+09:00","description":"5 章 コンピュータアーキテクチャ","url":"https://ternbusty.github.io/posts/nand2tetris-05.html","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://ternbusty.github.io/posts/nand2tetris-05.html"},"@context":"https://schema.org"}</script><title>コンピュータシステムの理論と実装 (5) | ternbusty</title><link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicons/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicons/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicons/favicon-16x16.png"><link rel="manifest" href="/assets/img/favicons/site.webmanifest"><link rel="shortcut icon" href="/assets/img/favicons/favicon.ico"><meta name="apple-mobile-web-app-title" content="ternbusty"><meta name="application-name" content="ternbusty"><meta name="msapplication-TileColor" content="#da532c"><meta name="msapplication-config" content="/assets/img/favicons/browserconfig.xml"><meta name="theme-color" content="#ffffff"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"><link rel="dns-prefetch" href="https://fonts.gstatic.com"><link rel="preconnect" href="https://www.google-analytics.com" crossorigin="use-credentials"><link rel="dns-prefetch" href="https://www.google-analytics.com"><link rel="preconnect" href="https://www.googletagmanager.com" crossorigin="anonymous"><link rel="dns-prefetch" href="https://www.googletagmanager.com"><link rel="preconnect" href="https://cdn.jsdelivr.net"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.11.2/css/all.min.css"><link rel="stylesheet" href="/assets/css/style.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@1.0.1/dist/bootstrap-toc.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/magnific-popup@1.1.0/dist/magnific-popup.min.css"> <script src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script> <script type="text/javascript"> class ModeToggle { static get MODE_KEY() { return "mode"; } static get DARK_MODE() { return "dark"; } static get LIGHT_MODE() { return "light"; } constructor() { if (this.hasMode) { if (this.isDarkMode) { if (!this.isSysDarkPrefer) { this.setDark(); } } else { if (this.isSysDarkPrefer) { this.setLight(); } } } let self = this; /* always follow the system prefers */ this.sysDarkPrefers.addEventListener("change", () => { if (self.hasMode) { if (self.isDarkMode) { if (!self.isSysDarkPrefer) { self.setDark(); } } else { if (self.isSysDarkPrefer) { self.setLight(); } } self.clearMode(); } self.updateMermaid(); }); } /* constructor() */ get sysDarkPrefers() { return window.matchMedia("(prefers-color-scheme: dark)"); } get isSysDarkPrefer() { return this.sysDarkPrefers.matches; } get isDarkMode() { return this.mode === ModeToggle.DARK_MODE; } get isLightMode() { return this.mode === ModeToggle.LIGHT_MODE; } get hasMode() { return this.mode != null; } get mode() { return sessionStorage.getItem(ModeToggle.MODE_KEY); } /* get the current mode on screen */ get modeStatus() { if (this.isDarkMode || (!this.hasMode && this.isSysDarkPrefer)) { return ModeToggle.DARK_MODE; } else { return ModeToggle.LIGHT_MODE; } } setDark() { $('html').attr(ModeToggle.MODE_KEY, ModeToggle.DARK_MODE); sessionStorage.setItem(ModeToggle.MODE_KEY, ModeToggle.DARK_MODE); } setLight() { $('html').attr(ModeToggle.MODE_KEY, ModeToggle.LIGHT_MODE); sessionStorage.setItem(ModeToggle.MODE_KEY, ModeToggle.LIGHT_MODE); } clearMode() { $('html').removeAttr(ModeToggle.MODE_KEY); sessionStorage.removeItem(ModeToggle.MODE_KEY); } updateMermaid() { if (typeof mermaid !== "undefined") { let expectedTheme = (this.modeStatus === ModeToggle.DARK_MODE? "dark" : "default"); let config = { theme: expectedTheme }; /* re-render the SVG › <https://github.com/mermaid-js/mermaid/issues/311#issuecomment-332557344> */ $(".mermaid").each(function() { let svgCode = $(this).prev().children().html(); $(this).removeAttr("data-processed"); $(this).html(svgCode); }); mermaid.initialize(config); mermaid.init(undefined, ".mermaid"); } } } /* ModeToggle */ const toggle = new ModeToggle(); function flipMode() { if (toggle.hasMode) { if (toggle.isSysDarkPrefer) { if (toggle.isLightMode) { toggle.clearMode(); } else { toggle.setLight(); } } else { if (toggle.isDarkMode) { toggle.clearMode(); } else { toggle.setDark(); } } } else { if (toggle.isSysDarkPrefer) { toggle.setLight(); } else { toggle.setDark(); } } toggle.updateMermaid(); } /* flipMode() */ </script><body data-spy="scroll" data-target="#toc"><div id="sidebar" class="d-flex flex-column align-items-end" lang="en"><div class="profile-wrapper text-center"><div id="avatar"> <a href="/" alt="avatar" class="mx-auto"> <img src="/assets/img/profile.jpg" alt="avatar" onerror="this.style.display='none'"> </a></div><div class="site-title mt-3"> <a href="/">ternbusty</a></div><div class="site-subtitle font-italic">miscellaneous notes</div></div><ul class="w-100"><li class="nav-item"> <a href="/" class="nav-link"> <i class="fa-fw fas fa-home ml-xl-3 mr-xl-3 unloaded"></i> <span>HOME</span> </a><li class="nav-item"> <a href="/tools.html" class="nav-link"> <i class="fa-fw fas fa-toolbox ml-xl-3 mr-xl-3 unloaded"></i> <span>TOOLS</span> </a><li class="nav-item"> <a href="/categories.html" class="nav-link"> <i class="fa-fw fas fa-stream ml-xl-3 mr-xl-3 unloaded"></i> <span>CATEGORIES</span> </a><li class="nav-item"> <a href="/tags.html" class="nav-link"> <i class="fa-fw fas fa-tag ml-xl-3 mr-xl-3 unloaded"></i> <span>TAGS</span> </a><li class="nav-item"> <a href="/archives.html" class="nav-link"> <i class="fa-fw fas fa-archive ml-xl-3 mr-xl-3 unloaded"></i> <span>ARCHIVES</span> </a><li class="nav-item"> <a href="/about.html" class="nav-link"> <i class="fa-fw fas fa-info-circle ml-xl-3 mr-xl-3 unloaded"></i> <span>ABOUT</span> </a></ul><div class="sidebar-bottom mt-auto d-flex flex-wrap justify-content-center align-items-center"> <button class="mode-toggle btn" aria-label="Switch Mode"> <i class="fas fa-adjust"></i> </button> <span class="icon-border"></span> <a href="https://github.com/ternbusty" aria-label="github" target="_blank" rel="noopener"> <i class="fab fa-github"></i> </a> <a href="https://twitter.com/ternbusty" aria-label="twitter" target="_blank" rel="noopener"> <i class="fab fa-twitter"></i> </a> <a href=" javascript:location.href = 'mailto:' + ['ternbusty.dev','gmail.com'].join('@')" aria-label="email" > <i class="fas fa-envelope"></i> </a> <a href="/feed.xml" aria-label="rss" > <i class="fas fa-rss"></i> </a></div></div><div id="topbar-wrapper" class="row justify-content-center topbar-down"><div id="topbar" class="col-11 d-flex h-100 align-items-center justify-content-between"> <span id="breadcrumb"> <span> <a href="/"> Home </a> </span> <span>コンピュータシステムの理論と実装 (5)</span> </span> <i id="sidebar-trigger" class="fas fa-bars fa-fw"></i><div id="topbar-title"> Post</div><i id="search-trigger" class="fas fa-search fa-fw"></i> <span id="search-wrapper" class="align-items-center"> <i class="fas fa-search fa-fw"></i> <input class="form-control" id="search-input" type="search" aria-label="search" autocomplete="off" placeholder="Search..."> <i class="fa fa-times-circle fa-fw" id="search-cleaner"></i> </span> <span id="search-cancel" >Cancel</span></div></div><div id="main-wrapper"><div id="main"><div class="row"><div id="core-wrapper" class="col-12 col-lg-11 col-xl-8"><div class="post pl-1 pr-1 pl-sm-2 pr-sm-2 pl-md-4 pr-md-4"><h1 data-toc-skip>コンピュータシステムの理論と実装 (5)</h1><div class="post-meta text-muted"><div> By <em> <a href="https://twitter.com/ternbusty">ternbusty</a> </em></div><div class="d-flex"><div> <span> Posted <em class="timeago" date="2022-01-05 00:00:00 +0900" data-toggle="tooltip" data-placement="bottom" title="Wed, Jan 5, 2022, 12:00 AM +0900" >Jan 5, 2022</em> </span> <span> Updated <em class="timeago" date="2022-01-09 20:29:04 +0900 " data-toggle="tooltip" data-placement="bottom" title="Sun, Jan 9, 2022, 8:29 PM +0900" >Jan 9, 2022</em> </span> <span class="readtime" data-toggle="tooltip" data-placement="bottom" title="2124 words"> <em>11 min</em> read</span></div></div></div><div class="post-content"><h2 id="5-章-コンピュータアーキテクチャ">5 章 コンピュータアーキテクチャ<a href="#5-章-コンピュータアーキテクチャ" class='anchor'><i class="fas fa-hashtag"></i></a></h2></h2><p>本章ではついにメモリ、CPU を実装していく。</p><h3 id="メモリの実装">メモリの実装<a href="#メモリの実装" class='anchor'><i class="fas fa-hashtag"></i></a></h3></h3><ul><li>基本的に p99 の仕様に従って書いていけばよい。まずは入力として与えられたアドレスがどのメモリマップに位置するかを判定する必要があるが、0-16383 が RAM に、16384-24575 がスクリーンに、24576 以降がキーボードに割り振られていることを考慮すると以下のような表が完成する。これらは p21 の表を参考にしつつ <code class="language-plaintext highlighter-rouge">DMux4Way</code> で簡単に書くことができる。出力も同様にマルチプレキサを用いればよい。</ul><div class="table-wrapper"><table><thead><tr><th style="text-align: left"> <th style="text-align: left"><code class="language-plaintext highlighter-rouge">Address[14]</code><th style="text-align: left"><code class="language-plaintext highlighter-rouge">Address[13]</code><tbody><tr><td style="text-align: left">RAM<td style="text-align: left">0<td style="text-align: left">0<tr><td style="text-align: left">RAM<td style="text-align: left">0<td style="text-align: left">1<tr><td style="text-align: left">Screen<td style="text-align: left">1<td style="text-align: left">0<tr><td style="text-align: left">Keyboard<td style="text-align: left">1<td style="text-align: left">1</table></div><ul><li>最初のデマルチプレキサ部分で a と b に同じ名前の変数を入れると怒られが発生するので (よく考えたらそりゃそうだ)、ここでは <code class="language-plaintext highlighter-rouge">loadram0</code> と <code class="language-plaintext highlighter-rouge">loadram1</code> という変数にそれぞれ格納したうえで、<code class="language-plaintext highlighter-rouge">Or</code> をとることによって RAM 入力の boolean をまとめている。</ul><div file="Memory.hdl" class="language-plaintext highlighter-rouge"><div class="code-header"> <span label-text="Memory.hdl"><i class="far fa-file-code"></i></span> <button aria-label="copy" title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre><td class="rouge-code"><pre>CHIP Memory {
+    IN in[16], load, address[15];
+    OUT out[16];
+
+    PARTS:
+        DMux4Way(in=load, sel=address[13..14], a=loadram0, b=loadram1, c=loadsc, d=loadkey);
+        Or(a=loadram0, b=loadram1, out=loadram);
+
+        RAM16K(in=in, load=loadram, address=address[0..13], out=outram);
+        Screen(in=in, load=loadsc, address=address[0..12], out=outsc);
+        Keyboard(out=outkey);
+
+        Mux4Way16(a=outram, b=outram, c=outsc, d=outkey, sel=address[13..14], out=out);
+}
+</pre></table></code></div></div><h3 id="cpu-の実装">CPU の実装<a href="#cpu-の実装" class='anchor'><i class="fas fa-hashtag"></i></a></h3></h3><ul><li>p102 とにらめっこしながら地道に実装していくことになる。ここで作る CPU はデータレジスタ <code class="language-plaintext highlighter-rouge">D</code>、アドレスレジスタ <code class="language-plaintext highlighter-rouge">A</code>、プログラムカウンタレジスタ <code class="language-plaintext highlighter-rouge">PC</code> を備えている。これらのレジスタには、遠く離れた場所にあるメモリより高速にアクセスできる。<li>CPU に与えられるのは M value input (16 ビット)、reset (命令メモリの値をリセットする場合は 1 を与える) のほか、16 bit の命令がある。p70 で説明があったように、この命令は<ul><li>A 命令: <code class="language-plaintext highlighter-rouge">0vvvvvvvvvvvvvvv</code> の形式。<code class="language-plaintext highlighter-rouge">A</code> レジスタに <code class="language-plaintext highlighter-rouge">vvvvvvvvvvvvvvv</code> の値を設定<li>C 命令: <code class="language-plaintext highlighter-rouge">111accccccdddjjj</code> の形式。<ul><li><code class="language-plaintext highlighter-rouge">acccccc</code> の部分 (comp 領域) では実行する計算 (の数式) を指定する。1 bit 目 <code class="language-plaintext highlighter-rouge">a</code> では ALU が計算に <code class="language-plaintext highlighter-rouge">A</code> レジスタの値か M value input のどちらを用いるかを決定する。<li><code class="language-plaintext highlighter-rouge">ddd</code> の 3bit (dest 領域) では、計算結果を <code class="language-plaintext highlighter-rouge">A</code> レジスタ、<code class="language-plaintext highlighter-rouge">D</code> レジスタ、<code class="language-plaintext highlighter-rouge">Memory[A]</code> にそれぞれ格納するかどうかを指定する。<li><code class="language-plaintext highlighter-rouge">jjj</code> の部分では計算結果の正負に応じたジャンプの条件を指定 (p73 表を参照)。ジャンプする場合、アドレスは事前に <code class="language-plaintext highlighter-rouge">A</code> レジスタに設定しておく必要がある。</ul></ul><p>という形式になっている。とりあえず <code class="language-plaintext highlighter-rouge">instruction[15]</code> が 0 のとき A 命令、そうでないとき C 命令になることが分かる。</p><li>以上より、ここで <code class="language-plaintext highlighter-rouge">A</code> レジスタの目線に立つと次のように書ける。<ul><li>A 命令である場合 <code class="language-plaintext highlighter-rouge">instruction</code> の値を無条件で <code class="language-plaintext highlighter-rouge">A</code> レジスタに設定<li>C 命令でありかつ <code class="language-plaintext highlighter-rouge">instruction[5] == 1</code> である場合、ALU 出力を <code class="language-plaintext highlighter-rouge">A</code> レジスタに設定</ul><li><code class="language-plaintext highlighter-rouge">D</code> レジスタの目線では、C 命令でありかつ <code class="language-plaintext highlighter-rouge">instruction[4] == 1</code> である場合のみ ALU 出力を <code class="language-plaintext highlighter-rouge">D</code> レジスタの入力に設定することになる。その他の場合は何もしなくてよい (load ビットに false を設定するようにすればよい)。<li>次は <code class="language-plaintext highlighter-rouge">ALU</code> の視点に立ってみる。<ul><li>A 命令の場合は特に計算するものもないので適当に false でも出力させておく。<li>C 命令の場合は何らか 2 つの 16bit 値に関して計算しなくてはならない。そのうちの 1 つに <code class="language-plaintext highlighter-rouge">D</code> レジスタからの出力を用いるのは確定である。もう一つの入力については、<code class="language-plaintext highlighter-rouge">a</code> つまり <code class="language-plaintext highlighter-rouge">instruction[12]</code> が 0 の場合 <code class="language-plaintext highlighter-rouge">A</code> レジスタからの出力を、1 のときは M value input を用いる形にすればよい。</ul><li>最後は <code class="language-plaintext highlighter-rouge">PC</code> の目線である。C 命令でありかつ ALU の出力が jump の条件 <code class="language-plaintext highlighter-rouge">instruction[0..2]</code> を満たしている場合のみ load させればよい。そのほかの場合は特にジャンプ操作は発生しないのでインクリメントすればよい (<code class="language-plaintext highlighter-rouge">inc = true</code> としておけばよい)。<li>この CPU の出力について。<code class="language-plaintext highlighter-rouge">writeM</code> が true の場合、RAM[<code class="language-plaintext highlighter-rouge">addressM</code>] に <code class="language-plaintext highlighter-rouge">outM</code> の値を設定することになる。<code class="language-plaintext highlighter-rouge">writeM</code> の値は、C 命令でありかつ <code class="language-plaintext highlighter-rouge">instruction[3] == 1</code> であるときのみ true になる。A 命令の場合は <code class="language-plaintext highlighter-rouge">A</code> レジスタの値が変化するだけであり RAM の操作は絡まないので、無条件で false となる。<li>非常にややこしいが、上記をまとめると以下のようになる。</ul><div file="CPU.hdl" class="language-plaintext highlighter-rouge"><div class="code-header"> <span label-text="CPU.hdl"><i class="far fa-file-code"></i></span> <button aria-label="copy" title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+</pre><td class="rouge-code"><pre>CHIP CPU {
+    IN  inM[16],         // M value input  (M = contents of RAM[A])
+        instruction[16], // Instruction for execution
+        reset;           // Signals whether to re-start the current
+                         // program (reset==1) or continue executing
+                         // the current program (reset==0).
+
+    OUT outM[16],        // M value output
+        writeM,          // Write to M? 
+        addressM[15],    // Address in data memory (of M)
+        pc[15];          // address of next instruction
+
+    PARTS:
+        // instruction[15] が 0 のとき A 命令、1 のとき C 命令
+        Mux(a=false, b=true, sel=instruction[15], out=isC);
+
+        // writeM (M に書き込むかどうかの bool) を出力
+        And(a=instruction[3], b=isC, out=writeM);
+        
+        // A レジスタの処理
+        // instruction[5] は d ビット。A に書き込むかどうかを決定する
+        // A 命令であるか, あるいは C 命令でかつ instruction[5] == 1 なら load する
+        Mux(a=true, b=instruction[5], sel=isC, out=isLoadA);
+        // A 命令なら instruction を、C 命令なら outALU を読み込む
+        Mux16(a=instruction, b=outALU, sel=isC, out=loadobj); // 図 5-7 の A レジスタ手間のマルチプレキサ
+        ARegister(in=loadobj, load=isLoadA, out=outA, out[0..14]=addressM);
+
+        // 計算結果を D レジスタに保存する
+        // C 命令でかつ instruction[4] == 1 であるときのみ load すればよい
+        And(a=instruction[4], b=isC, out=loadD);
+        DRegister(in=outALU, load=loadD, out=outD);
+
+        // instruction[12] は、ALU が A レジスタかメモリ入力のどちらを操作するかを決定する (p71 図 4-3 の左右が決定される)
+        // 0 のときは A からの出力を, 1 のときは inM を利用
+        Mux16(a=outA, b=inM, sel=instruction[12], out=AorM); // 図 5-7 の、ALU の手間にあるマルチプレキサ
+        // ALU
+        ALU(x=outD, y=AorM, zx=instruction[11], nx=instruction[10], zy=instruction[9], ny=instruction[8], f=instruction[7], no=instruction[6], out=outALU, zr=zr, ng=ng);
+        // C 命令のとき outALU を outM として出力。A 命令の時は何を出力しても良い
+        Mux16(a=false, b=outALU, sel=isC, out=outM);
+
+        // load は ALU の出力 (outM) が jump の条件を満たしている場合に 1 となる
+        Jump(in=instruction[0..2], zr=zr, ng=ng, out=isLoadJump);
+        Mux(a=false, b=isLoadJump, sel=isC, out=load);
+        // in には A レジスタからの出力が入る
+        // load あるいは reset が 1 のときはどうせ無視されるので、inc は常に 1 でよい
+        PC(in=outA, load=load, inc=true, reset=reset, out[0..14]=pc);
+}
+</pre></table></code></div></div><p>ジャンプ部分では以下の自作 CHIP を用いている。ALU から出力された <code class="language-plaintext highlighter-rouge">zr</code>, <code class="language-plaintext highlighter-rouge">ng</code> のフラグが、<code class="language-plaintext highlighter-rouge">instruction[0..2]</code> の内容に沿っているかを判定していけばよい。</p><div file="Jump.hdl" class="language-plaintext highlighter-rouge"><div class="code-header"> <span label-text="Jump.hdl"><i class="far fa-file-code"></i></span> <button aria-label="copy" title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+</pre><td class="rouge-code"><pre>CHIP Jump {
+    IN in[3], zr, ng;
+    OUT out;
+
+    PARTS:
+        // 正かどうかの boolean (pg) を作っておく
+        Or(a=zr, b=ng, out=tmp);
+        Not(in=tmp, out=pg);
+
+        // in[0] は 正、in[1] はゼロ、in[2] は負のときを表す
+        And(a=in[2], b=ng, out=out0);
+        And(a=in[1], b=zr, out=out1);
+        And(a=in[0], b=pg, out=out2);
+
+        // out0-2 のいずれかに該当する場合は true を返す
+        Or(a=out0, b=out1, out=out3);
+        Or(a=out2, b=out3, out=out);
+}
+</pre></table></code></div></div><h3 id="computer-の実装">Computer の実装<a href="#computer-の実装" class='anchor'><i class="fas fa-hashtag"></i></a></h3></h3><p>やっとこさ CPU まで出来上がったところで、あとは p105 の図を参考にしつつこれらを接続するだけである。やったね……！</p><div file="Computer.hdl" class="language-plaintext highlighter-rouge"><div class="code-header"> <span label-text="Computer.hdl"><i class="far fa-file-code"></i></span> <button aria-label="copy" title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre><td class="rouge-code"><pre>
+CHIP Computer {
+    IN reset;
+    PARTS:
+        ROM32K(address=pc, out=instruction);
+        CPU(inM=inM, instruction=instruction, reset=reset, outM=outM, writeM=writeM, addressM=addressM, pc=pc);
+        Memory(in=outM, load=writeM, address=addressM, out=inM);
+}
+</pre></table></code></div></div></div><div class="post-tail-wrapper text-muted"><div class="post-meta mb-3"> <i class="far fa-folder-open fa-fw mr-1"></i> <a href='/categories/technology.html'>Technology</a>, <a href='/categories/low-level.html'>Low-Level</a></div><div class="post-tags"> <i class="fa fa-tags fa-fw mr-1"></i> <a href="/tags/low-level.html" class="post-tag no-text-decoration" >Low-Level</a> <a href="/tags/hdl.html" class="post-tag no-text-decoration" >HDL</a> <a href="/tags/nand2tetris.html" class="post-tag no-text-decoration" >nand2tetris</a> <a href="/tags/book-review.html" class="post-tag no-text-decoration" >Book Review</a></div><div class="post-tail-bottom d-flex justify-content-between align-items-center mt-3 pt-5 pb-2"><div class="license-wrapper"> This post is licensed under <a href="https://creativecommons.org/licenses/by/4.0/"> CC BY 4.0 </a> by the author.</div><div class="share-wrapper"> <span class="share-label text-muted mr-1">Share</span> <span class="share-icons"> <a href="https://twitter.com/intent/tweet?text=コンピュータシステムの理論と実装 (5) - ternbusty&url=https://ternbusty.github.io/posts/nand2tetris-05.html" data-toggle="tooltip" data-placement="top" title="Twitter" target="_blank" rel="noopener" aria-label="Twitter"> <i class="fa-fw fab fa-twitter"></i> </a> <a href="https://www.facebook.com/sharer/sharer.php?title=コンピュータシステムの理論と実装 (5) - ternbusty&u=https://ternbusty.github.io/posts/nand2tetris-05.html" data-toggle="tooltip" data-placement="top" title="Facebook" target="_blank" rel="noopener" aria-label="Facebook"> <i class="fa-fw fab fa-facebook-square"></i> </a> <a href="https://telegram.me/share?text=コンピュータシステムの理論と実装 (5) - ternbusty&url=https://ternbusty.github.io/posts/nand2tetris-05.html" data-toggle="tooltip" data-placement="top" title="Telegram" target="_blank" rel="noopener" aria-label="Telegram"> <i class="fa-fw fab fa-telegram"></i> </a> <i id="copy-link" class="fa-fw fas fa-link small" data-toggle="tooltip" data-placement="top" title="Copy link" title-succeed="Link copied successfully!"> </i> </span></div></div></div></div></div><div id="panel-wrapper" class="col-xl-3 pl-2 text-muted topbar-down"><div class="access"><div id="access-lastmod" class="post"><div class="panel-heading">Recent Update</div><ul class="post-content pl-0 pb-1 ml-1 mt-2"><li><a href="/posts/cloudflare-zero-trust.html">自宅の Raspberry Pi で立てているサービスを Cloudflare Zero Trust で公開する</a><li><a href="/posts/playlist-player.html">YouTube の再生リストをシャッフル / 逆順で再生させる</a><li><a href="/posts/gas.html">血液ガスの判定</a><li><a href="/posts/gas-diagnosis.html">酸塩基平衡障害の鑑別</a><li><a href="/posts/measure-weight.html">IoT を使って毎朝体重を測らざるを得ないようにする</a></ul></div><div id="access-tags"><div class="panel-heading">Trending Tags</div><div class="d-flex flex-wrap mt-3 mb-1 mr-3"> <a class="post-tag" href="/tags/python.html">Python</a> <a class="post-tag" href="/tags/product.html">Product</a> <a class="post-tag" href="/tags/book-review.html">Book Review</a> <a class="post-tag" href="/tags/low-level.html">Low-Level</a> <a class="post-tag" href="/tags/nand2tetris.html">nand2tetris</a> <a class="post-tag" href="/tags/javascript.html">JavaScript</a> <a class="post-tag" href="/tags/jack.html">Jack</a> <a class="post-tag" href="/tags/compiler.html">Compiler</a> <a class="post-tag" href="/tags/hdl.html">HDL</a> <a class="post-tag" href="/tags/iot.html">IoT</a></div></div></div><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@1.0.1/dist/bootstrap-toc.min.js"></script><div id="toc-wrapper" class="pl-0 pr-4 mb-5"><div class="panel-heading pl-3 pt-2 mb-2">Contents</div><nav id="toc" data-toggle="toc"></nav></div></div></div><div class="row"><div class="col-12 col-lg-11 col-xl-8"><div id="tail-wrapper" class="pl-1 pr-1 pl-sm-2 pr-sm-2 pl-md-4 pr-md-4"><div id="related-posts" class="mt-5 mb-2 mb-sm-4"><h3 class="pt-2 mt-1 mb-4 ml-1" data-toc-skip>Further Reading</h3><div class="card-deck mb-4"><div class="card"> <a href="/posts/nand2tetris-01.html"><div class="card-body"> <em class="timeago small" date="2021-12-31 00:00:00 +0900" >Dec 31, 2021</em><h3 class="pt-0 mt-1 mb-3" data-toc-skip>コンピュータシステムの理論と実装 (1)</h3><div class="text-muted small"><p> 年末年始を利用して、2 年くらい前に買ったこの本を読んでいく。 コンピュータシステムの理論と実装 ―モダンなコンピュータの作り方 | Noam Nisan, Shimon Schocken, 斎藤 康毅 |本 | 通販 | Amazon NAND ゲートのみが与えられた状態で、論理回路、加算器、ALU、C...</p></div></div></a></div><div class="card"> <a href="/posts/nand2tetris-02.html"><div class="card-body"> <em class="timeago small" date="2022-01-01 00:00:00 +0900" >Jan 1, 2022</em><h3 class="pt-0 mt-1 mb-3" data-toc-skip>コンピュータシステムの理論と実装 (2)</h3><div class="text-muted small"><p> あけましておめでとうではあるが、特に新年感もなく粛々と復習を続けていく。今日は第 2 章、ブール算術から。 2 章 ブール算術 加算器 $n$ ビットの 2 進数加算をする場合を考える。2 つのビットの和を求める半加算器 (half adder) が必要なのはまあ当たり前である。足し算の筆算的に最下位ビットから計算していくことを考えると、2 つのビットと繰り上がり (キャ...</p></div></div></a></div><div class="card"> <a href="/posts/nand2tetris-03.html"><div class="card-body"> <em class="timeago small" date="2022-01-02 00:00:00 +0900" >Jan 2, 2022</em><h3 class="pt-0 mt-1 mb-3" data-toc-skip>コンピュータシステムの理論と実装 (3)</h3><div class="text-muted small"><p> 3 章 順序回路 今回は前章まで作成した「組み合わせ回路」と違って「順序回路」を作っていく。フリップフロップ (1 ビットの入力とクロック入力を受け取り、前のタイムポイントでの入力を出力する) は所与のものとして扱う。 まずは 1 bit レジスタを作成する。1 ビットの入力と load ビットを受け取り、load ビットが 1 の場合値を更新、0 の場合入力は無視される。これも...</p></div></div></a></div></div></div><div class="post-navigation d-flex justify-content-between"> <a href="/posts/nand2tetris-04.html" class="btn btn-outline-primary" prompt="Older"><p>コンピュータシステムの理論と実装 (4)</p></a> <a href="/posts/nand2tetris-06.html" class="btn btn-outline-primary" prompt="Newer"><p>コンピュータシステムの理論と実装 (6)</p></a></div></div></div></div><footer class="d-flex w-100 justify-content-center"><div class="d-flex justify-content-between align-items-center text-muted"><div class="footer-left"><p class="mb-0"> © 2023 <a href="https://twitter.com/ternbusty">ternbusty</a>. <span data-toggle="tooltip" data-placement="top" title="Except where otherwise noted, the blog posts on this site are licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0) License by the author.">Some rights reserved.</span></p></div><div class="footer-right"><p class="mb-0"> Powered by <a href="https://jekyllrb.com" target="_blank" rel="noopener">Jekyll</a> with <a href="https://github.com/cotes2020/jekyll-theme-chirpy" target="_blank" rel="noopener">Chirpy</a> theme.</p></div></div></footer></div><div id="search-result-wrapper" class="d-flex justify-content-center unloaded"><div class="col-12 col-sm-11 post-content"><div id="search-hints"><div id="access-tags"><div class="panel-heading">Trending Tags</div><div class="d-flex flex-wrap mt-3 mb-1 mr-3"> <a class="post-tag" href="/tags/python.html">Python</a> <a class="post-tag" href="/tags/product.html">Product</a> <a class="post-tag" href="/tags/book-review.html">Book Review</a> <a class="post-tag" href="/tags/low-level.html">Low-Level</a> <a class="post-tag" href="/tags/nand2tetris.html">nand2tetris</a> <a class="post-tag" href="/tags/javascript.html">JavaScript</a> <a class="post-tag" href="/tags/jack.html">Jack</a> <a class="post-tag" href="/tags/compiler.html">Compiler</a> <a class="post-tag" href="/tags/hdl.html">HDL</a> <a class="post-tag" href="/tags/iot.html">IoT</a></div></div></div><div id="search-results" class="d-flex flex-wrap justify-content-center text-muted mt-3"></div></div></div></div><div id="mask"></div><a id="back-to-top" href="#" aria-label="back-to-top" class="btn btn-lg btn-box-shadow" role="button"> <i class="fas fa-angle-up"></i> </a> <script src="https://cdn.jsdelivr.net/npm/simple-jekyll-search@1.10.0/dest/simple-jekyll-search.min.js"></script> <script> SimpleJekyllSearch({ searchInput: document.getElementById('search-input'), resultsContainer: document.getElementById('search-results'), json: '/assets/js/data/search.json', searchResultTemplate: '<div class="pl-1 pr-1 pl-sm-2 pr-sm-2 pl-lg-4 pr-lg-4 pl-xl-0 pr-xl-0"> <a href="{url}">{title}</a><div class="post-meta d-flex flex-column flex-sm-row text-muted mt-1 mb-1"> {categories} {tags}</div><p>{snippet}</p></div>', noResultsText: '<p class="mt-5">Oops! No result founds.</p>', templateMiddleware: function(prop, value, template) { if (prop === 'categories') { if (value === '') { return `${value}`; } else { return `<div class="mr-sm-4"><i class="far fa-folder fa-fw"></i>${value}</div>`; } } if (prop === 'tags') { if (value === '') { return `${value}`; } else { return `<div><i class="fa fa-tag fa-fw"></i>${value}</div>`; } } } }); </script> <script src="https://cdn.jsdelivr.net/combine/npm/lozad/dist/lozad.min.js,npm/magnific-popup@1/dist/jquery.magnific-popup.min.js,npm/clipboard@2/dist/clipboard.min.js"></script> <script defer src="/assets/js/dist/post.min.js"></script> <script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$']], processEscapes: true},});</script> <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.6/MathJax.js?config=TeX-AMS_CHTML"></script> <script src="https://cdn.jsdelivr.net/combine/npm/popper.js@1.16.1,npm/bootstrap@4/dist/js/bootstrap.min.js"></script> <script defer src="/app.js"></script> <script defer src="https://www.googletagmanager.com/gtag/js?id=G-PRQ5143E4V"></script> <script> document.addEventListener("DOMContentLoaded", function(event) { window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-PRQ5143E4V'); }); </script>
