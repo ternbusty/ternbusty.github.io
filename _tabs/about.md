@@ -131,7 +131,7 @@ order: 5
 
 **[Modified Pomodoro Technique](https://ternbusty.github.io/timer.html)** <span class="language-tag my-purple">JavaScript</span>
 - 休憩の前借り・借金制度を導入したポモドーロタイマー
-- 詳細は [こちら](https://ternbusty.github.io/posts/modified-pomodoro.html)
+- 詳細は [こちら](https://ternbusty.github.io/tags/pomodoro.html)
 
 **[YouTube Playlist Player](https://ternbusty.github.io/youtube.html)** <span class="language-tag my-purple">JavaScript</span>
 - YouTube の再生リストをシャッフル / 逆順再生するツール
