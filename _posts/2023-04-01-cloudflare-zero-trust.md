@@ -120,6 +120,20 @@ Zero Trust -> Access -> Applications -> Add an application から新規アプリ
 
 ここで自分のアカウントでログインしてみると当然サービスが利用できるし、試しに別垢でログインを試みたところ「That account does not have access」と表示されて失敗する。やったね！
 
+## トラブルシューティング
+
+- `cloudflared tunnel run` した際に `failed to sufficiently increase receive buffer size.` が表示される問題。これについては、リンク先の instruction 通り buffer size を増やせばよい。
+
+```bash
+sudo sysctl -w net.core.rmem_max=2500000
+```
+
+- 同じく `cloudflared tunnel run` した際に `Incoming request ended abruptly: context canceled` が大量発生する問題。要はタイムアウトしているということだと思うが、手元の環境では実行時に IPv6 を指定することで改善した。
+
+```bash
+cloudflared tunnel --edge-ip-version 6 run test
+```
+
 ## 感想
 今回、Cloudflare zero trust を利用することによって、自宅鯖それ自体を外部に公開することなくインターネットから利用し、さらに Google アカウントを用いたアクセス制御を行うことができた。Cloudflare Zero Trust はユーザ数が 1 人なので無料プランのままで利用できるし、かかっているコストは Cloudflare で新規取得したドメインの料金くらいである (これに関してはもともと取りたかったドメインだし、年間 1400 円くらいなので別にいいかな)。
 
