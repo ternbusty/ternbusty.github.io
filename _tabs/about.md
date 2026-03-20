@@ -33,7 +33,7 @@ lang: en
 | 2021.4 - 2023.3       | National Center for Global Health and Medicine | Resident doctor      ||
 | 2020.5 - 2021.3 | [Part-time] RIKEN                | Researcher |
 | 2018.9 - 2021.3 | [Part-time] Quadlytics Inc.      | Researcher |
-a| 2018.3 - 2019.3 | [Part-time] CO-CONV, Corp.       | Corporate engineer |
+| 2018.3 - 2019.3 | [Part-time] CO-CONV, Corp.       | Corporate engineer |
 
 ## Professional Experience
 
@@ -55,7 +55,7 @@ A specialized task force dedicated to solving high-complexity and mission-critic
 
 ## Public Speaking & Publications
 
-### Conference Speaking
+### Conference Presentations
 
 - **Building a Low-Level Container Runtime in One Week** *[CloudNative Days Winter 2025](https://event.cloudnativedays.jp/cndw2025/talks/2749) (Nov 2025)* [[Slides]](https://speakerdeck.com/ternbusty/cloudnative-days-winter-2025-zhou-jian-dezuo-rudi-reiyakontenarantaimu) [[Session Recording](https://event.cloudnativedays.jp/cndw2025/talks/2749)] <span class="language-tag tag-violet">Kotlin</span>
 - **Virtual Thread Deep Dive** *[JJUG CCC 2025 Fall](https://sessionize.com/api/v2/es4wssur/view/Sessions) (Nov 2025)* [[Slides]](https://speakerdeck.com/ternbusty/jjug-ccc-2025-fall-virtual-thread-deep-dive) <span class="language-tag tag-lime">Java</span>
