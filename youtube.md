@@ -6,10 +6,8 @@ categories: [Technology, Web]
 tags: [JavaScript, Product]
 ---
 
-<head>
 <link href="/assets/css/youtube.css" rel="stylesheet" type="text/css">
 <script src="https://kit.fontawesome.com/ddf1feedf5.js" crossorigin="anonymous"></script>
-</head>
 
 <div id="how-to-use">
 <details>
@@ -32,11 +30,7 @@ tags: [JavaScript, Product]
 </div>
 
 <div id="youtube">
-<html>
-  <body>
     <div id="player"></div>
-  </body>
-</html>
 
 <div class="table-wrapper"><table id="que">
   <tbody>
