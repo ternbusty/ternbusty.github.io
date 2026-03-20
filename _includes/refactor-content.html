@@ -170,7 +170,7 @@
       {% capture anchor %}<a href="#{{ id }}" class='anchor'><i class="fas fa-hashtag"></i></a>{% endcapture %}
 
       {% assign left = snippet | split: mark_end | first %}
-      {% assign right = snippet | replace: left, '' %}
+      {% assign right = snippet | replace_first: left, '' | remove_first: mark_end %}
 
       {% assign _new_content = _new_content | append: mark_start
           | append: left | append: anchor | append: mark_end | append: right
