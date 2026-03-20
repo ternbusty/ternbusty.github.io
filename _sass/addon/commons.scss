@@ -1737,11 +1737,15 @@ $sidebar-display: "sidebar-display";
 ::-webkit-scrollbar-track {
   border-radius: 5px;
   }
-  
+
 ::-webkit-scrollbar-thumb {
   border-radius: 5px;
   background: #dadada;
 }
+
+// Open Color palette (https://yeun.github.io/open-color/)
+$tag-text-dark: #343a40;  // oc-gray-8
+$tag-text-light: #fff;
 
 .language-tag {
   display: inline-block;
@@ -1749,36 +1753,25 @@ $sidebar-display: "sidebar-display";
   text-align: center;
   font-size: 0.85rem;
   margin-left: 5px;
-  color: #ffffff;
   border-radius: 0.3rem;
   padding: 0 0.4rem;
   line-height: 1.3rem;
   text-decoration: none;
 }
-.my-orange {
-  background: rgb(245, 174, 10);
-}
-.my-purple {
-  background: rgb(174, 173, 235);
-}
-.my-gray {
-  background: rgb(148, 147, 147);
-}
-.my-green {
-  background: rgb(149, 206, 116);
-}
-.my-pink {
-  background: rgb(226, 169, 226);
-}
-.my-red {
-  background: rgb(233, 159, 159)
-}
-.my-blue {
-  background: rgb(159, 187, 233)
-}
-.my-brown {
-  background: rgb(206, 159, 74)
-}
-.my-moegi {
-  background: rgb(191, 201, 52)
-}
+
+// Light backgrounds → dark text
+.tag-red    { background: #ffa8a8; color: $tag-text-dark; } // oc-red-3
+.tag-pink   { background: #faa2c1; color: $tag-text-dark; } // oc-pink-3
+.tag-orange { background: #ffc078; color: $tag-text-dark; } // oc-orange-3
+.tag-yellow { background: #ffe066; color: $tag-text-dark; } // oc-yellow-3
+.tag-lime   { background: #c0eb75; color: $tag-text-dark; } // oc-lime-3
+.tag-green  { background: #8ce99a; color: $tag-text-dark; } // oc-green-3
+.tag-cyan   { background: #66d9e8; color: $tag-text-dark; } // oc-cyan-3
+.tag-teal   { background: #63e6be; color: $tag-text-dark; } // oc-teal-3
+
+// Darker backgrounds → white text
+.tag-grape  { background: #cc5de8; color: $tag-text-light; } // oc-grape-5
+.tag-violet { background: #845ef7; color: $tag-text-light; } // oc-violet-5
+.tag-indigo { background: #5c7cfa; color: $tag-text-light; } // oc-indigo-5
+.tag-blue   { background: #339af0; color: $tag-text-light; } // oc-blue-5
+.tag-gray   { background: #868e96; color: $tag-text-light; } // oc-gray-6
