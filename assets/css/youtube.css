@@ -1,0 +1,75 @@
+table {
+  width: 640px;
+}
+
+#player {
+  margin-bottom: 20px;
+}
+
+.table-wrapper {
+  width: 640px;
+  height: 250px;
+  overflow: scroll;
+  overflow-x: hidden;
+}
+
+.body {
+  scrollbar-width: none;
+}
+
+#youtube {
+  display: none;
+}
+
+input {
+  border: none;
+}
+
+input[type="text"] {
+  width: 90%;
+  margin-top: 10px;
+  margin-right: 20px;
+  font-size: 20px;
+  background: none;
+  text-align: center;
+  border: 1px solid #aaa;
+  margin-bottom: 20px;
+  border-radius: 6px;
+  height: 50px;
+}
+
+#buttons {
+  width: 90%;
+  padding-top: 10px;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+input[type="button"] {
+  font-size: 20px;
+  height: 50px;
+  min-width: 180px;
+  min-width: 180px;
+  border-radius: 6px;
+}
+
+input:focus,
+button:focus {
+  outline: none;
+}
+
+input[type="text"]:focus::placeholder {
+  opacity: 0;
+}
+
+.table-wrapper > table tbody tr td {
+  white-space: normal;
+}
+
+table {
+  word-wrap: break-word;
+}
+
+table th {
+  padding-left: 10px;
+}
