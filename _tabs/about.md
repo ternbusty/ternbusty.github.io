@@ -57,6 +57,7 @@ A specialized task force dedicated to solving high-complexity and mission-critic
 
 ### Conference Presentations
 
+- **Building a Shared, Persistent Virtual Filesystem for WebAssembly** *[Open Source Summit North America 2026](https://events.linuxfoundation.org/open-source-summit-north-america/) (May 2026)* [[Slides]](https://speakerdeck.com/ternbusty/ossna-wasm-virtual-filesytem) [[Session Recording](https://www.youtube.com/watch?v=Z1-6mAN9V2E)] <span class="language-tag tag-pink">Rust</span>
 - **Building a Low-Level Container Runtime in One Week** *[CloudNative Days Winter 2025](https://event.cloudnativedays.jp/cndw2025/talks/2749) (Nov 2025)* [[Slides]](https://speakerdeck.com/ternbusty/cloudnative-days-winter-2025-zhou-jian-dezuo-rudi-reiyakontenarantaimu) [[Session Recording](https://event.cloudnativedays.jp/cndw2025/talks/2749)] <span class="language-tag tag-violet">Kotlin</span>
 - **Virtual Thread Deep Dive** *[JJUG CCC 2025 Fall](https://sessionize.com/api/v2/es4wssur/view/Sessions) (Nov 2025)* [[Slides]](https://speakerdeck.com/ternbusty/jjug-ccc-2025-fall-virtual-thread-deep-dive) <span class="language-tag tag-lime">Java</span>
 - **Understanding Internal Mechanics for High-Performance Server-Side Kotlin** *[Server Side Kotlin Meetup vol.16](https://server-side-kotlin-meetup.connpass.com/event/366587/) (Oct 2025)* [[Slides](https://speakerdeck.com/ternbusty/server-side-kotlin-meetup-vol-dot-16-understand-the-internal-mechanics-and-write-high-performance-server-side-kotlin-applications)] <span class="language-tag tag-violet">Kotlin</span>
@@ -74,10 +75,10 @@ A specialized task force dedicated to solving high-complexity and mission-critic
 - A low layer container runtime built with Kotlin/Native
 - Presented this project at CloudNative Days Winter 2025 ([link to slides](https://speakerdeck.com/ternbusty/cloudnative-days-winter-2025-zhou-jian-dezuo-rudi-reiyakontenarantaimu))
 
-### **[Halycon](https://github.com/ternbusty/halycon)** <span class="language-tag tag-pink">Rust</span>
+### **[MonakaFS](https://github.com/ternbusty/monaka-fs)** <span class="language-tag tag-pink">Rust</span>
 
 - Virtual filesystem for WebAssembly
-- Upcoming presentation at Open Source Summit 2026 ([link to the session](https://sched.co/2JQxq))
+- Presented this project at Open Source Summit North America 2026 ([link to the session](https://sched.co/2JQxq), [link to slides](https://speakerdeck.com/ternbusty/ossna-wasm-virtual-filesytem))
 
 ## Contribution to OSS
 
