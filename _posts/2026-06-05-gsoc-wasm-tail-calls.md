@@ -76,6 +76,34 @@ Throughput in operations per second, higher is better. `ON / OFF` is the ratio.
 3. `tailrec` lowered loops are at parity. The design choice to keep `tailrec` as a loop is confirmed.
 4. Virtual and interface dispatch are unchanged at PR 2, confirming PR 2's scope is exactly the static dispatch path. PR 3 will move these numbers.
 
+### Beyond the host stack limit
+
+The numbers above stay within depths that V8 can handle in either configuration. The case the feature actually exists for is the one V8 cannot survive without it. To probe that directly I added a `DepthStress` benchmark class that calls each of the four patterns at depth 1,000,000, then ran the suite once with the feature enabled and once with `isEligibleForTailCall` patched back to `false`.
+
+With the feature disabled the first benchmark method to run (`interfaceMutualAt1M`, alphabetical order) throws `RangeError: Maximum call stack size exceeded` and kills the Node process, taking the benchmark task down with it before any other `DepthStress` method runs. The repeated wasm offset in the stack trace is the recursive interface dispatch frame being pushed over and over until V8 gives up.
+
+```
+… bench.DepthStress.interfaceMutualAt1M
+RangeError: Maximum call stack size exceeded
+    at null.<anonymous> (wasm://wasm/000f163a:1:149024)
+    at null.<anonymous> (wasm://wasm/000f163a:1:149096)
+    at null.<anonymous> (wasm://wasm/000f163a:1:195899)
+    at null.<anonymous> (wasm://wasm/000f163a:1:195911)
+    at null.<anonymous> (wasm://wasm/000f163a:1:195911)
+    ...
+```
+
+With the feature enabled all four patterns complete.
+
+| pattern | throughput at depth 1M | per call cost |
+|--------|--------------------:|------------:|
+| static mutual recursion | 2,561 ops/sec | about 390 ns |
+| non `tailrec` self recursion | 1,597 ops/sec | about 626 ns |
+| virtual dispatch mutual | 1,067 ops/sec | about 937 ns |
+| interface dispatch mutual | 251 ops/sec | about 3.98 μs |
+
+Per call cost stays in the hundreds of nanoseconds to a few microseconds at this depth. Frame reuse means memory does not grow with depth, so a Kotlin/Wasm program is no longer bounded by the host stack limit, only by the runtime of the program itself.
+
 ## Process so far
 
 Initial design exploration was bottom up. I read `TailrecLowering`, `BodyGenerator`, `Operators.kt`, and the `WasmLoweringPhases` ordering, then sketched the eligibility filter list against the failure modes (try catch exclusion, signature mismatch, intrinsic handling, constructor receiver issues). After that the work has been one PR at a time, each gated on local tests and a regression sweep.
