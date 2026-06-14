@@ -42,6 +42,45 @@ BodyGenerator extends `IrVisitorVoid` with no context parameter. Threading an `i
 
 The pre pass deliberately returns a superset based on syntactic tail position. Per call eligibility (signature equality, constructor callee, intrinsic) is checked at the emit site in `generateCall` because it requires Wasm level type information. This separation keeps the pre pass small and reusable.
 
+The non obvious item on that list is the constructor exclusion, which actually exists in two places. The `WasmTailCallCollector` returns an empty set when the enclosing function is a constructor, and `isEligibleForTailCall` rejects calls whose callee is a constructor. Both checks point at the same asymmetry. A Kotlin constructor has IR return type `Unit`, but the Wasm function the backend emits for it has a return signature that includes the constructed object. The backend achieves this by appending a load of local 0 (the receiver) right before the `RETURN` opcode in `visitFunctionReturn`, so the emitted Wasm function effectively has signature `(params...) -> (ref $ClassType)` even though the IR view says `(params...) -> Unit`.
+
+On the caller side, consider a class whose `init` block calls something in tail position.
+
+```kotlin
+class A {
+    init {
+        finishInit()
+    }
+}
+
+fun finishInit() { /* ... */ }
+```
+
+If we tried to emit `return_call $finishInit` for the call to `finishInit`, the trailing `local.get 0` and `return` that push the receiver would never execute. The constructor would terminate without ever putting the constructed object on the stack, and any caller of `A()` would see a malformed result. The collector ducks the entire question by returning an empty candidate set when the enclosing function is a constructor.
+
+On the callee side, consider a function that returns a freshly constructed object.
+
+```kotlin
+fun makeA(): A = A()
+```
+
+The call to `A()` is an `IrConstructorCall`, not an `IrCall`, so the `call is IrCall` check catches it directly. The reason the `callee is IrConstructor` check is also there is to handle the case where a regular `IrCall` ends up resolving to a constructor through `realOverrideTarget` chasing. It is rare but possible in synthesized code.
+
+If we somehow got past the first check and arrived at the signature comparison without the constructor guard, the comparison would lie. The check uses `wasmModuleTypeTransformer.transformResultType(callee.returnType)` to compute the callee's Wasm result types. For an `IrConstructor` the IR return type is `Unit`, so this gives an empty list. But the actual emitted Wasm signature is `(ref $ClassType)`. The check would conclude that a Unit returning caller has the same signature as a constructor callee, accept the tail call, and emit a `return_call` that drops the caller frame and jumps to a function whose actual signature wants the receiver to be pushed.
+
+```kotlin
+// imagine without the callee constructor check
+fun warmCache() {
+    Cache()
+}
+```
+
+Wasm would validate `warmCache` as returning nothing, the call site as `return_call $Cache.<init>`, and the `Cache` constructor as actually returning `(ref $Cache)`. At runtime the receiver gets pushed by `Cache`'s epilogue but `warmCache`'s caller is expecting nothing on the stack. The result is either a validation error caught at module load time or a stack discipline violation at runtime depending on which side the engine trusts.
+
+The constructor guard shuts that path down by rejecting any tail call whose callee is a constructor, regardless of how the signature comparison would have come out.
+
+The whole asymmetry comes from the choice to emit constructors as Wasm functions that push the receiver in their epilogue. If a future lowering moves the receiver creation out of the constructor body and into a wrapper, constructors would look like ordinary functions with `(params...) -> (ref $ClassType)` signature and no trailing trickery, and both checks could be removed. That is a bigger restructuring than this PR series wants to take on.
+
 ### Dead code after tail call kept in place
 
 The trailing `RETURN` in `visitFunctionReturn` and the trailing `buildGetUnit` for Unit returning callees are unreachable after a `return_call` since the frame is gone. I tried suppressing both on the tail path and stdlib functions like `AbstractMutableList.clear` failed validation with stack underflow. The reason is that `generateAsStatement` still emits `drop` expecting the value on the IR stack. For correctness the trailing instructions are left in place. The optimized binary path (`wasm-opt`) appears to fold most of this out so the binary size impact is small in practice.
