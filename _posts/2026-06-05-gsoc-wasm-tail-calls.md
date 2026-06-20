@@ -71,6 +71,8 @@ Throughput in operations per second, higher is better. `ON / OFF` is the ratio.
 | `tailrec` lowered to a loop | 1,000 | 2,650,139 | 2,557,474 | 0.97 x |
 | `tailrec` lowered to a loop | 10,000 | 272,930 | 272,979 | 1.00 x |
 
+![Per-call cost at depth 10,000](/assets/img/2026-06-05-tail-call-chart.svg)
+
 -  Every non `tailrec` benchmarks gets faster with the feature on, and the gain grows with depth. Without the feature each recursive call pushes a new frame. With the feature each tail call reuses the caller frame, and the per call cost stops growing with depth.
 - `tailrec` loops are at parity, confirming the design choice to leave the existing lowering alone. Native tail calls only handle what loop lowering cannot express.
 - The absolute throughput ordering is static < self < virtual < interface in terms of per call cost, which mirrors the underlying dispatch chain. Static is a single `call` instruction, virtual adds a vtable struct get, and interface goes through vtable plus a ref cast.
