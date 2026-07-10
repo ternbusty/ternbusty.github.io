@@ -122,7 +122,7 @@ val operand = parsePrecedence(prefixPrecedence)
 Expression.UnaryOp(operator, operand)   // not a tail call
 ```
 
-The current tail call pass can only emit `return_call` for calls that are already in tail position in the IR. To make tail calls useful on code like this, the compiler needs to create new tail positions that do not exist in the source. OCaml 5's TMC (tail modulo cons) rewrites `Cons(x, f(y))` so that `f(y)` becomes a tail call by writing the result into a pre-allocated cell. A CPS (continuation-passing style) transform can generalize this further. Both are active areas of research in functional language compilers. Applying these transforms to Kotlin/Wasm IR is the next step for this project.
+The current tail call pass can only emit `return_call` for calls that are already in tail position in the IR. To make tail calls useful on code like this, the compiler needs to create new tail positions that do not exist in the source. OCaml 4.14's TMC (tail modulo cons) rewrites `Cons(x, f(y))` so that `f(y)` becomes a tail call by writing the result into a pre-allocated cell. A CPS (continuation-passing style) transform can generalize this further. Both are active areas of research in functional language compilers. Applying these transforms to Kotlin/Wasm IR is the next step for this project.
 
 ## Upstream status
 
