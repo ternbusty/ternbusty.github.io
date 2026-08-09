@@ -8,7 +8,7 @@ tags: [Kotlin, WebAssembly, Compiler, GSoC]
 
 ## What the tail call PR series covers
 
-The [Kotlin/Wasm tail call PR series](https://ternbusty.github.io/posts/gsoc-wasm-tail-calls/) teaches the compiler to emit native Wasm tail call instructions (`return_call`, `return_call_ref`) for calls that sit in tail position. The Wasm spec guarantees that a tail call reuses the caller's stack frame, so any chain of tail calls runs in constant stack space regardless of depth.
+The [Kotlin/Wasm tail call PR series](https://ternbusty.github.io/posts/gsoc-wasm-tail-calls.html) teaches the compiler to emit native Wasm tail call instructions (`return_call`, `return_call_ref`) for calls that sit in tail position. The Wasm spec guarantees that a tail call reuses the caller's stack frame, so any chain of tail calls runs in constant stack space regardless of depth.
 
 Below are the call patterns the current implementation handles, the ones it does not, and what a survey of real codebases found about each.
 
@@ -230,7 +230,7 @@ Library authors have removed most of the recursion an optimizer would like to fi
 
 ## Constructor-wrapped recursion in the survey
 
-The survey also looked for constructor-wrapped recursion, the shape where exactly one constructor consumes the recursive call's result and nothing else runs after the call. OCaml 4.14's tail-modulo-cons optimizes this shape, and the [TMC post](https://ternbusty.github.io/posts/wasm-tmc-selective-tail-calls/) covers the transform itself.
+The survey also looked for constructor-wrapped recursion, the shape where exactly one constructor consumes the recursive call's result and nothing else runs after the call. OCaml 4.14's tail-modulo-cons optimizes this shape, and the [TMC post](https://ternbusty.github.io/posts/wasm-tmc-selective-tail-calls.html) covers the transform itself.
 
 ```kotlin
 class Node(val value: Int, val next: Node?)
