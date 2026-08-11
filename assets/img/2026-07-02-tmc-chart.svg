@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="940" height="270" font-family="system-ui, -apple-system, sans-serif" font-size="12">
+<rect width="940" height="270" fill="white"/>
+<text x="470" y="22" text-anchor="middle" font-size="16" font-weight="bold">TMC vs Plain Recursion</text>
+
+<!-- Legend -->
+<rect x="330" y="38" width="14" height="14" fill="#EA4335" rx="2"/>
+<text x="348" y="49" font-size="11">Plain recursion</text>
+<rect x="480" y="38" width="14" height="14" fill="#4285F4" rx="2"/>
+<text x="498" y="49" font-size="11">@TailModCons</text>
+
+<!-- X axis grid: 0 to 22,000 ns; scale: 580 px / 22000 = 0.02636 px/ns, x=280 to x=860 -->
+<line x1="280" y1="68" x2="280" y2="220" stroke="#e0e0e0" stroke-width="1"/>
+<text x="280" y="238" text-anchor="middle" font-size="10" fill="#666">0 ns</text>
+<line x1="411.8" y1="68" x2="411.8" y2="220" stroke="#e0e0e0" stroke-width="1"/>
+<text x="411.8" y="238" text-anchor="middle" font-size="10" fill="#666">5,000 ns</text>
+<line x1="543.6" y1="68" x2="543.6" y2="220" stroke="#e0e0e0" stroke-width="1"/>
+<text x="543.6" y="238" text-anchor="middle" font-size="10" fill="#666">10,000 ns</text>
+<line x1="675.5" y1="68" x2="675.5" y2="220" stroke="#e0e0e0" stroke-width="1"/>
+<text x="675.5" y="238" text-anchor="middle" font-size="10" fill="#666">15,000 ns</text>
+<line x1="807.3" y1="68" x2="807.3" y2="220" stroke="#e0e0e0" stroke-width="1"/>
+<text x="807.3" y="238" text-anchor="middle" font-size="10" fill="#666">20,000 ns</text>
+<text x="543.6" y="258" text-anchor="middle" font-size="11" fill="#666">Time per invocation (lower is better)</text>
+
+<!-- Row 1: Depth 1,000 — plain 2,032 ns, TMC 401 ns -->
+<text x="270" y="100" text-anchor="end" font-size="11">Depth 1,000</text>
+<rect x="280" y="84" width="53.6" height="20" fill="#EA4335" rx="2" opacity="0.85"/>
+<text x="337.6" y="98" font-size="9" fill="#333">2,032 ns</text>
+<rect x="280" y="108" width="10.6" height="20" fill="#4285F4" rx="2" opacity="0.85"/>
+<text x="294.6" y="122" font-size="9" fill="#333">401 ns</text>
+<line x1="280" y1="141" x2="860" y2="141" stroke="#f0f0f0" stroke-width="1"/>
+
+<!-- Row 2: Depth 10,000 — plain 20,811 ns, TMC 4,093 ns -->
+<text x="270" y="170" text-anchor="end" font-size="11">Depth 10,000</text>
+<rect x="280" y="154" width="548.8" height="20" fill="#EA4335" rx="2" opacity="0.85"/>
+<text x="832.8" y="168" font-size="9" fill="#333">20,811 ns</text>
+<rect x="280" y="178" width="107.9" height="20" fill="#4285F4" rx="2" opacity="0.85"/>
+<text x="391.9" y="192" font-size="9" fill="#333">4,093 ns</text>
+<line x1="280" y1="211" x2="860" y2="211" stroke="#f0f0f0" stroke-width="1"/>
+
+</svg>

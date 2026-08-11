@@ -8,15 +8,13 @@ tags: [Kotlin, WebAssembly, Compiler, GSoC]
 
 ## What the tail call PR series covers
 
-The [Kotlin/Wasm tail call PR series](https://ternbusty.github.io/posts/gsoc-wasm-tail-calls.html) teaches the compiler to emit native Wasm tail call instructions (`return_call`, `return_call_ref`) for calls that sit in tail position. The Wasm spec guarantees that a tail call reuses the caller's stack frame, so any chain of tail calls runs in constant stack space regardless of depth.
-
-Below are the call patterns the current implementation handles, the ones it does not, and what a survey of real codebases found about each.
+The [Kotlin/Wasm tail call PR series](https://ternbusty.github.io/posts/gsoc-wasm-tail-calls.html) makes the compiler emit native Wasm tail call instructions (`return_call`, `return_call_ref`) for calls that sit in tail position. The Wasm spec guarantees that a tail call reuses the caller's stack frame, so any chain of tail calls runs in constant stack space regardless of depth.
 
 ## Patterns that are optimized
 
-### Static dispatch (mutual recursion, non-tailrec self recursion)
+### Static dispatch
 
-Any direct function call in tail position emits `return_call` instead of `call`.
+[PR #2](https://github.com/ternbusty/kotlin/pull/2) makes any direct function call in tail position emit `return_call` instead of `call`.
 
 ```kotlin
 fun isEven(n: Int): Boolean {
@@ -30,9 +28,9 @@ fun isOdd(n: Int): Boolean {
 }
 ```
 
-This is the pattern that `tailrec` cannot express. `tailrec` only rewrites direct self-recursion into a loop. Mutual recursion between `isEven` and `isOdd` would overflow at around depth 10K on V8 without tail calls. With tail calls enabled, it runs to depth 1M in constant stack space.
+`tailrec` rewrites direct self-recursion into a loop. Mutual recursion between `isEven` and `isOdd` overflows at depth ~10K on V8 without tail calls but runs to 1M in constant stack with them.
 
-Self-recursion without the `tailrec` annotation is also covered.
+The implementation also covers self-recursion without the `tailrec` annotation.
 
 ```kotlin
 fun sumTo(n: Int, acc: Int = 0): Int {
@@ -41,11 +39,11 @@ fun sumTo(n: Int, acc: Int = 0): Int {
 }
 ```
 
-If the developer had written `tailrec fun sumTo(...)`, the existing `TailrecLowering` pass would have rewritten it into a `do-while` loop before codegen. The loop form is ~20% faster (no frame teardown overhead), so the compiler leaves `tailrec` functions alone and only emits native tail calls for unmarked functions.
+[`TailrecLowering`](https://github.com/JetBrains/kotlin/blob/master/compiler/ir/backend.common/src/org/jetbrains/kotlin/backend/common/lower/TailrecLowering.kt) rewrites `tailrec fun sumTo(...)` into a `do-while` loop, which is ~20% faster. The compiler leaves `tailrec` functions alone and only emits native tail calls for unmarked ones.
 
 ### Virtual dispatch
 
-Calling an `open` or `abstract` method in tail position emits `return_call_ref` via the vtable.
+[PR #3](https://github.com/ternbusty/kotlin/pull/3) extends tail call emission to virtual and interface dispatch. Calling an `open` or `abstract` method in tail position emits `return_call_ref` via the vtable.
 
 ```kotlin
 sealed class Expr {
@@ -62,7 +60,7 @@ class If(val cond: Expr, val then: Expr, val else_: Expr) : Expr() {
 }
 ```
 
-In a tree-walking interpreter, `eval` dispatches through the class hierarchy at every node. Without tail calls, evaluating a deeply nested AST (e.g. a chain of 10K `if` expressions) overflows the stack. With tail calls, whichever branch `If.eval` picks is a tail call, so the stack stays flat.
+A chain of 10K `if` expressions overflows without tail calls but stays flat with them, because whichever branch `If.eval` picks is a tail call.
 
 ### Interface dispatch
 
@@ -89,40 +87,29 @@ class ValidateProcessor(val next: Processor) : Processor {
 }
 ```
 
-### Function references (callRef)
+### Function references
 
 Calling a value of function type is an indirect call, even when it reads like a plain call.
 
 ```kotlin
-fun applyTransform(value: Int, transform: (Int) -> Int): Int {
-    return transform(value)  // indirect: the target is a runtime value
-}
-
 fun doubled(x: Int) = x * 2
+
+fun applyTransform(value: Int, transform: (Int) -> Int): Int {
+    return transform(value)  // indirect: transform is a runtime value
+}
 
 fun main() {
     println(applyTransform(21, ::doubled))  // 42
 }
 ```
 
-When the value is a function reference like `::doubled` (not a lambda closure), the compiler generates a reference class whose `invoke` bridge dispatches through the `callRef` intrinsic, a typed `call_ref` on a funcref. PR 5 emits `return_call_ref` for that bridge when it sits in tail position, so reference-dispatched recursion runs in constant stack.
+For function references like `::doubled`, the compiler generates a reference class whose `invoke` bridge dispatches through `callRef`, a typed `call_ref` on a funcref. [PR #5](https://github.com/ternbusty/kotlin/pull/19) emits `return_call_ref` for that bridge in tail position.
 
-## Patterns not yet optimized
+## Lambda dispatch
 
-### Lambda dispatch
+Lambda closures go through `FunctionN<R>.invoke()`, which does not emit `return_call` today. Two Kotlin/Wasm-specific issues block it.
 
-Lambda closures (`{ ... }`) go through `FunctionN<R>.invoke()`, and the compiler does not emit these as tail calls today, even when they sit in tail position.
-
-```kotlin
-fun runThen(n: Int, action: () -> Unit) {
-    if (n == 0) return action()      // in tail position, but NOT emitted as a tail call
-    return runThen(n - 1, action)    // emitted (static self-dispatch)
-}
-```
-
-The `action()` sits in tail position, the same position where the self-call one line below gets `return_call`. It still compiles to a plain `action.invoke()`, because the invoke path hits two problems.
-
-The first is an IR-level issue. `Function0<Unit>.invoke()` has erased return type `Any?` at the Wasm level. `GenericReturnTypeLowering` sees the mismatch between `Any?` (erased) and `Unit` (call site) and wraps the invoke in an implicit `as Unit` cast. `WasmTypeOperatorLowering` then expands this cast into a composite expression:
+- [`GenericReturnTypeLowering`](https://github.com/JetBrains/kotlin/blob/master/compiler/ir/backend.wasm/src/org/jetbrains/kotlin/backend/wasm/lower/GenericReturnTypeLowering.kt) sees a mismatch between the erased return type `Any?` and the call-site type, wrapping the invoke in a cast that demotes it from tail position.
 
 ```
 Composite {
@@ -131,149 +118,157 @@ Composite {
 }
 ```
 
-The cast expansion demotes `invoke()` to a statement, out of tail position.
-
-The second is a Wasm-level signature mismatch. Even without the cast expansion, `Function0<Unit>.invoke()` returns `anyref` in the Wasm signature, while a Unit-returning caller has return type `void`. The Wasm spec requires `return_call_ref` signatures to match exactly, so the Wasm validator would reject the call.
-
-Any code that passes callbacks through recursive structures hits this. A CPS (Continuation-Passing Style) transformation, for example, relies on lambda tail calls to run in constant stack.
+- Even without the cast, the Wasm-level signature mismatch between `anyref` and the caller's actual return type would cause the validator to reject `return_call_ref`.
 
 ```kotlin
-// Cannot run in constant stack today: k.invoke() is never tail-called
-fun buildTree(node: ASTNode, k: (Tree) -> Tree): Tree {
-    if (node.isLeaf) return k(Tree.Leaf(node.value))
-    return buildTree(node.left) { leftTree ->
-        buildTree(node.right) { rightTree ->
-            k(Tree.Branch(leftTree, rightTree))
-        }
-    }
+fun runThen(n: Int, action: () -> Unit) {
+    if (n == 0) return action()      // in tail position, but NOT emitted as a tail call
+    return runThen(n - 1, action)    // emitted (static self-dispatch)
 }
 ```
 
-I prototyped one fix, changing the Wasm calling convention so Unit-returning functions return `anyref` (the Unit singleton), which makes the signatures match. CPS-style code ran to depth 500K with the change, but it touches block expressions, try-finally, and the suspend state machines, and broke 128 existing tests, so it is not part of the PR series.
+[PR #17](https://github.com/ternbusty/kotlin/pull/17) addresses both issues.
 
-### Non-tail recursion (parser loops, tree traversals)
+## Beyond tail position
 
-Some recursive patterns are structurally non-tail. The call is inside a loop body, or its result is consumed by an enclosing expression.
+The patterns above all require the call to be in tail position. Many recursive calls are not in tail positions.
 
 ```kotlin
-// Recursive descent parser: recursion is inside a while loop
-fun parseObject(depth: Int): Node {
-    val children = mutableListOf<Node>()
-    while (hasMoreTokens()) {
-        children.add(parseObject(depth + 1))  // not in tail position
-    }
-    return Node(children)
+return Cons(head, self(tail))       // constructor wrap
+return 1 + self(n - 1)              // arithmetic
+return process(self(subproblem))    // arbitrary computation
+```
+
+["Tail Recursion Modulo Context"](https://doi.org/10.1145/3571233) (Leijen and Lorenzen's, POPL 2023) provides a framework for these cases. The PR series implements three of these instantiations.
+
+### Constructor contexts
+
+When a constructor wraps the recursive result, the compiler allocates it with a null placeholder, tail-calls the recursion and patches the result in afterward. This is destination-passing style, the same transform [OCaml 4.14 shipped as `[@tail_mod_cons]`](https://ocaml.org/manual/5.1/tail_mod_cons.html).
+
+```kotlin
+fun replicate(n: Int, x: Int): IList<Int> = when {
+    n <= 0 -> IList.Nil
+    else -> IList.Cons(x, replicate(n - 1, x))  // context: Cons(x, ·)
 }
 ```
 
+See: [Kotlin/Wasm: Tail Modulo Cons Lowering](https://ternbusty.github.io/posts/wasm-tmc-selective-tail-calls.html)
+
+### Monoid contexts
+
+When an associative operation wraps the recursive result, the compiler passes an accumulator parameter.
+
 ```kotlin
-// Tree traversal: recursion result is consumed by +
-fun treeSum(node: TreeNode): Int {
-    if (node.isLeaf) return node.value
-    return treeSum(node.left) + treeSum(node.right)  // neither call is in tail position
+fun countUp(n: Int): Int {
+    if (n == 0) return 0
+    return 1 + countUp(n - 1)  // context: 1 + ·
+}
+
+// Generated by the accumulator lowering
+private fun countUp$accum(n: Int, acc: Int): Int {
+    if (n == 0) return 0 + acc
+    return countUp$accum(n - 1, 1 + acc)  // self-call in tail position
+}
+fun countUp(n: Int): Int = countUp$accum(n, 0)
+```
+
+Currently, [my PR](https://github.com/ternbusty/kotlin/pull/16) handles commutative operators on `Int` and `Long` with `+`, `*`, `and`, `or`, and `xor`. It also handles `String.plus`, which is associative but not commutative, by preserving operand order for one-sided patterns like `return str + self(args)`.
+
+My PR does not cover the full general monoid case, where operands appear on both sides of the recursive call.
+
+### CPS (Continuation-Passing Style)
+
+Continuation-Passing Style is the most general instantiation. It can transform any recursive pattern by representing the context as a continuation function.
+
+```kotlin
+fun transform(n: Int): Int {
+    if (n == 0) return 1
+    return transform(n - 1) * 2 + 1  // context: · * 2 + 1
+}
+
+// CPS-transformed
+fun transform_cps(n: Int, k: (Int) -> Int): Int {
+    if (n == 0) return k(1)
+    return transform_cps(n - 1) { x -> k(x * 2 + 1) }  // tail call
+}
+fun transform(n: Int): Int = transform_cps(n) { it }
+```
+
+This transformation is being implemented in [this PR](https://github.com/ternbusty/kotlin/pull/20) (work in progress).
+
+Each recursive call allocates one closure, which can make performance worse. Constructor and accumulator transforms avoid this cost for their respective shapes, so the compiler prefers them over CPS when the pattern fits.
+
+Kotlin's [`DeepRecursiveFunction`](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-deep-recursive-function/) covers the same class of patterns at the library level through the coroutine machinery. The suspend/resume protocol per call can make it slower than native recursion on Kotlin/Wasm. Using it also requires rewriting the recursive function into the `DeepRecursiveFunction { ... }` form and replacing every recursive call with `callRecursive`.
+
+```kotlin
+// Before: plain recursion
+fun sumList(node: ListNode?): Int {
+    if (node == null) return 0
+    return node.value + sumList(node.next)
+}
+
+// After: DeepRecursiveFunction rewrite
+val sumList = DeepRecursiveFunction<ListNode?, Int> { node ->
+    if (node == null) 0
+    else node.value + callRecursive(node.next)
 }
 ```
 
-No amount of `return_call` emission helps here because the calls are not in tail position to begin with. Optimizing these would require a source-level transformation (CPS conversion for the parser, or accumulator introduction for the tree sum) before codegen.
+The CPS lowering automates this rewrite at the compiler level. The developer writes plain recursion and the compiler generates the heap-frame version.
 
-Apollo's GraphQL parser ships this exact shape today, in [`parseValueInternal`](https://github.com/apollographql/apollo-kotlin/blob/main/libraries/apollo-ast/src/commonMain/kotlin/com/apollographql/apollo/ast/internal/Parser.kt#L989).
+### Others
 
-```kotlin
-private fun parseValueInternal(const: Boolean): GQLValue {
-  return when (val t = token) {
-    is Token.LeftBracket -> parseList(const)
-    is Token.LeftBrace -> parseObject(const)
-    // ...
-  }
-}
+The paper also describes following two patterns, but they are not implemented yet. These are covered by CPS.
 
-private fun parseObject(const: Boolean): GQLObjectValue {
-  return GQLObjectValue(
-      sourceLocation = sourceLocation(),
-      fields = parseList<Token.LeftBrace, Token.RightBrace, GQLObjectField> {
-        parseObjectField(const)  // which parses a value, re-entering parseValueInternal
-      }
-  )
-}
-```
+- exponent contexts: the context is repeated application of the same function
+- semiring contexts: combine two monoid operators with a distributivity law, such as `return x + 31 * hash(xs)`
 
-The `GQLObjectValue` constructor consumes the result, so the call is not a tail call, and the recursion re-enters through a lambda inside a list-builder loop. In my probe this parser overflows around nesting depth 2,000.
+## Real World Source Code Survey
 
-## How real codebases avoid recursion in the first place
+I surveyed 18 Kotlin multiplatform libraries targeting wasmJs, selected from ~180 GitHub hits for `wasmJs() filename:build.gradle.kts` by domain likelihood of recursive logic. I classified every recursive call by which compiler transform could optimize it and verified each hit by hand.
 
-I surveyed 15 Kotlin multiplatform libraries for recursion shapes (constructor-wrap patterns plus Tarjan SCC analysis of per-file call graphs, every hit verified by hand). The first finding is that libraries parsing deeply nested input have mostly engineered their recursion away, each with a different escape hatch.
+<details>
+<summary>Surveyed repositories</summary>
 
-JetBrains/markdown parses block structure with no recursion at all. The parser core, [`MarkerProcessor`](https://github.com/JetBrains/markdown/blob/master/src/commonMain/kotlin/org/intellij/markdown/parser/MarkerProcessor.kt#L15), maintains an explicit stack of open blocks and pushes and pops it in a flat scan loop.
+| Repository | Domain |
+|---|---|
+| [arkivanov/Decompose](https://github.com/arkivanov/Decompose) | Navigation / lifecycle |
+| [arrow-kt/arrow](https://github.com/arrow-kt/arrow) | Functional programming |
+| [a-sit-plus/jsonpath4k](https://github.com/a-sit-plus/jsonpath4k) | JSONPath evaluation |
+| [AdrianKuta/Tree-Data-Structure](https://github.com/AdrianKuta/Tree-Data-Structure) | Generic tree |
+| [Ashampoo/kim](https://github.com/Ashampoo/kim) | Image metadata |
+| [BenWoodworth/knbt](https://github.com/BenWoodworth/knbt) | NBT serialization |
+| [boswelja/compose-markdown](https://github.com/boswelja/compose-markdown) | Markdown rendering |
+| [ExoQuery/pprint-kotlin](https://github.com/ExoQuery/pprint-kotlin) | Pretty-printing |
+| [huarangmeng/latex](https://github.com/huarangmeng/latex) | LaTeX parsing |
+| [MohamedRejeb/compose-rich-editor](https://github.com/MohamedRejeb/compose-rich-editor) | Rich text editor |
+| [MohamedRejeb/Ksoup](https://github.com/MohamedRejeb/Ksoup) | HTML parsing |
+| [nacular/doodle](https://github.com/nacular/doodle) | UI framework |
+| [pdvrieze/xmlutil](https://github.com/pdvrieze/xmlutil) | XML / XPath |
+| [prof18/RSS-Parser](https://github.com/prof18/RSS-Parser) | RSS / Atom feed parsing |
+| [rjaros/kilua](https://github.com/rjaros/kilua) | Web framework |
+| [SciProgCentre/kmath](https://github.com/SciProgCentre/kmath) | Math / symbolic expressions |
+| [SnipMeDev/Highlights](https://github.com/SnipMeDev/Highlights) | Syntax highlighting |
+| [square/wire](https://github.com/square/wire) | Protocol Buffers |
 
-```kotlin
-abstract class MarkerProcessor<T : MarkerProcessor.StateInfo>(/* ... */) {
-    protected val markersStack: MutableList<MarkerBlock> = ArrayList()
-    // markersStack.add(newMarkerBlock) / closeChildren(index, ...) in a flat scan loop
-```
+</details>
 
-The kudzu parser combinator library kept the recursion but moved it to the heap, making every parser a `DeepRecursiveFunction` [by declaration](https://github.com/copper-leaf/kudzu/blob/main/kudzu-core/src/commonMain/kotlin/com/copperleaf/kudzu/parser/ParseFunction.kt).
+As a result, I found that
 
-```kotlin
-public typealias ParseFunction<T> = DeepRecursiveFunction<ParserContext, ParserResult<T>>
+- Genuine tail calls, construttor/accumulator patterns are almost not found in real Kotlin codebases as far as I searched.
+- Most recursion needs CPS
+  - 13 of 18 repositories contain recursive functions. The dominant pattern is a recursive call inside a loop body or a higher-order function like `forEach`, `map`, or `any`.
 
-public interface Parser<NodeType : Node> {
-    public fun predict(input: ParserContext): Boolean
-    public val parse: ParseFunction<NodeType>
-}
-```
+### How library authors avoid recursion
 
-The [KDoc on `Parser`](https://github.com/copper-leaf/kudzu/blob/main/kudzu-core/src/commonMain/kotlin/com/copperleaf/kudzu/parser/Parser.kt) spells the motivation out: parsing "is implemented with Kotlin's DeepRecursiveFunction, which uses suspend functions to convert a recursive function into an iterative one, where the recursion is managed on the heap rather than on the call-stack".
+I found that some library authors have engineered the recursion away.
 
-Some code copes by crashing. Apollo's parser above overflows on deep input, and the stdlib regex matcher recurses per input character with an open production crash report ([KT-63689](https://youtrack.jetbrains.com/issue/KT-63689)).
+- [JetBrains/markdown](https://github.com/JetBrains/markdown) parses block structure with no recursion at all. The parser core, [`MarkerProcessor`](https://github.com/JetBrains/markdown/blob/master/src/commonMain/kotlin/org/intellij/markdown/parser/MarkerProcessor.kt#L15), maintains an explicit stack of open blocks and pushes and pops it in a flat scan loop.
 
-Library authors have removed most of the recursion an optimizer would like to find. The remainder splits into code that pays a runtime cost for the manual rewrite (kudzu's `DeepRecursiveFunction` runs 8 to 15 times slower than native recursion on wasmJs) and code that still crashes.
+- The [kudzu](https://github.com/copper-leaf/kudzu) parser combinator library makes every parser a `DeepRecursiveFunction` [by declaration](https://github.com/copper-leaf/kudzu/blob/main/kudzu-core/src/commonMain/kotlin/com/copperleaf/kudzu/parser/ParseFunction.kt), moving recursion to the heap via the coroutine machinery.
 
-## Constructor-wrapped recursion in the survey
+- Some libraries still crash on deep input.
+  - Apollo's [GraphQL parser](https://github.com/apollographql/apollo-kotlin/blob/main/libraries/apollo-ast/src/commonMain/kotlin/com/apollographql/apollo/ast/internal/Parser.kt) overflows around nesting depth 2,000
+  - Stdlib regex matcher recurses per input character with an open crash report ([KT-63689](https://youtrack.jetbrains.com/issue/KT-63689)).
 
-The survey also looked for constructor-wrapped recursion, the shape where exactly one constructor consumes the recursive call's result and nothing else runs after the call. OCaml 4.14's tail-modulo-cons optimizes this shape, and the [TMC post](https://ternbusty.github.io/posts/wasm-tmc-selective-tail-calls.html) covers the transform itself.
-
-```kotlin
-class Node(val value: Int, val next: Node?)
-
-fun copyList(n: Node?): Node? {
-    if (n == null) return null
-    return Node(n.value, copyList(n.next))  // tail modulo cons
-}
-```
-
-The survey found zero self-recursive instances across the 15 libraries. Kotlin developers build lists with `MutableList` and imperative loops rather than functional constructor-chaining like `Node(x, recurse(...))`.
-
-The shape does exist in one form, as mutual-recursion cycles. The clearest specimen is square/wire's protobuf option parser, [`OptionReader.readKindAndValue`](https://github.com/square/wire/blob/master/wire-schema/src/commonMain/kotlin/com/squareup/wire/schema/internal/parser/OptionReader.kt#L96).
-
-```kotlin
-private fun readKindAndValue(): KindAndValue {
-  when (val peeked = reader.peekChar()) {
-    '{' -> return KindAndValue(MAP, readMap('{', '}', ':'))
-    '[' -> return KindAndValue(LIST, readList())
-    // ...
-  }
-}
-
-private fun readList(): List<Any> {
-  // ...
-  while (true) {
-    // ...
-    val option = readKindAndValue()  // closes the cycle
-    // ...
-  }
-}
-```
-
-The recursive result is wrapped in exactly one `KindAndValue` constructor, which is textbook TMC, but the recursion closes through `readMap` and `readList`, so it is a mutual cycle rather than self-recursion. xmlutil's XPath parser (an 11-function cycle in [`XPathExpression.kt`](https://github.com/pdvrieze/xmlutil/blob/master/xmlschema/src/commonMain/kotlin/io/github/pdvrieze/formats/xpath/XPathExpression.kt)) and Keval's expression grammar ([`Grammar.kt`](https://github.com/notKamui/Keval/blob/main/src/commonMain/kotlin/com/notkamui/keval/Grammar.kt)) have the same structure with wider cycles.
-
-The most consequential instance ships inside Kotlin itself. The Kotlin/Wasm stdlib regex pattern compiler, [`Pattern.kt`](https://github.com/JetBrains/kotlin/blob/master/libraries/stdlib/native-wasm/src/kotlin/text/regex/Pattern.kt#L339), builds its automaton with a `processExpression`/`processSubExpression` cycle whose result lands in a field write.
-
-```kotlin
-val next = processSubExpression(last)
-// ...
-cur.next = next   // tail modulo a field write, not a constructor
-// ...
-return cur
-```
-
-Compiling `Regex("(".repeat(2000) + "a" + ")".repeat(2000))` overflows the stack today because of this cycle.
+Libraries that rewrote recursion by hand paid a cost in development effort and, in kudzu's case, runtime performance. Libraries that did not rewrite it crash on deep input. The compiler lowerings can automate these rewrites.

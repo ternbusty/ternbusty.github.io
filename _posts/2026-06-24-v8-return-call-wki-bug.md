@@ -10,9 +10,9 @@ tags: [Kotlin, WebAssembly, V8, GSoC]
 
 The [Kotlin/Wasm tail call PR](https://ternbusty.github.io/posts/gsoc-wasm-tail-calls.html) emits native Wasm `return_call` / `return_call_ref` at tail-position call sites. [Microbenchmarks](https://github.com/ternbusty/wasm-tail-call-bench) confirmed the expected speedup for deep recursion. However, applying the same compiler to four real Kotlin/Wasm workloads produced the opposite result on V8. Every workload either slowed down or stayed flat.
 
-The slowdown turned out to be a V8 bug, not an inherent cost of tail calls. V8's JIT compiler inlines Well-Known Imports (WKI) such as `wasm:js-string` builtins when it sees a regular `call`, but skipped that optimization for `return_call`. Kotlin compiles string operations to thin wrappers around these builtins, and the tail call compiler rewrites the forwarding call inside each wrapper to `return_call`. The result was that every string operation fell off the fast path and went through the JS-Wasm bridge instead.
+The slowdown was a V8 bug. V8's JIT compiler inlines Well-Known Imports (WKI) such as `wasm:js-string` builtins when it sees a regular `call`, but skipped that optimization for `return_call`. Kotlin compiles string operations to thin wrappers around these builtins, and the tail call compiler rewrites the forwarding call inside each wrapper to `return_call`. Every string operation fell off the fast path and went through the JS-Wasm bridge.
 
-I [reported the bug and submitted a fix](https://chromium-review.googlesource.com/c/v8/v8/+/7989752) to V8. With the fix applied, the slowdown disappeared and all workloads returned to parity with the baseline. Parity, not improvement. None of the benchmarked workloads contain meaningful amounts of code in tail position. Compose UI trees are shallow, and the parser benchmarks wrap every recursive return in a constructor. To turn tail calls into a throughput win on real code, the compiler needs to create new tail-call-eligible sites that do not exist in the source. Continuation-passing style (CPS) transforms and tail modulo cons (TMC) rewrites, as explored in OCaml and other ML compilers, are the next step.
+I [reported the bug and submitted a fix](https://chromium-review.googlesource.com/c/v8/v8/+/7989752) to V8. The fix eliminated the slowdown and brought all workloads back to baseline, but none improved. None of the benchmarked workloads contain meaningful amounts of code in tail position. Compose UI trees are shallow, and the parser benchmarks wrap every recursive return in a constructor. To turn tail calls into a throughput win on real code, the compiler needs to create new tail-call-eligible sites that do not exist in the source. Continuation-passing style (CPS) transforms and tail modulo cons (TMC) rewrites, explored in OCaml and other ML compilers, come next.
 
 ## Four workloads, all slower or flat
 
@@ -61,9 +61,9 @@ The DB operations ([`DbBench`](https://github.com/zolotov/kmp-bugs/blob/master/r
 | parseNestedNot5000 | 804 | 499 | −38% |
 | parseLongChain1000 | 6,715 | 3,727 | −44% |
 
-## The cause was V8, not tail calls
+## The cause was V8
 
-The slowdown was specific to V8's wasmJs target. Compiling the same markdown benchmark to wasmWasi and running it on the same V8 engine eliminated it entirely.
+The slowdown was specific to V8's wasmJs target. Compiling the same markdown benchmark to wasmWasi and running it on the same V8 engine eliminated it.
 
 | Benchmark | OFF (ops/sec) | ON (ops/sec) | ON / OFF |
 |---|---:|---:|---:|
@@ -72,7 +72,7 @@ The slowdown was specific to V8's wasmJs target. Compiling the same markdown ben
 | parseRealisticMarkdown | 302.536 | 304.329 | +0.6% |
 | parseUnmatchedBrackets | 447.575 | 454.970 | +1.7% |
 
-If `return_call` were inherently slower, wasmWasi would also slow down. It did not. The difference is that wasmJs imports Well-Known Imports like `wasm:js-string` `length` and `charCodeAt`, which V8's TurboFan normally inlines to skip the JS-Wasm bridge. wasmWasi implements string operations in pure Wasm and never touches this code path.
+If `return_call` itself were slower, wasmWasi would also slow down. It did not. The difference is that wasmJs imports Well-Known Imports like `wasm:js-string` `length` and `charCodeAt`, which V8's TurboFan normally inlines to skip the JS-Wasm bridge. wasmWasi implements string operations in pure Wasm and never touches this code path.
 
 A `--prof` profile of the wasmJs run confirmed this hypothesis.
 
@@ -82,19 +82,19 @@ A `--prof` profile of the wasmJs run confirmed this hypothesis.
 | wasm-to-js bridge stubs | <1% | **20.9%** |
 | `WebAssemblyStringLength` builtin | <1% | **14.2%** |
 
-With tail calls enabled, ~35% of execution time was spent crossing the JS-Wasm bridge for string operations that should have been inlined.
+With tail calls enabled, the JS-Wasm bridge consumed ~35% of execution time on string operations that TurboFan should have inlined.
 
-## The bug in V8's Turboshaft graph builder
+### The bug in V8's Turboshaft graph builder
 
-V8's Turboshaft graph builder ([`turboshaft-graph-interface.cc`](https://source.chromium.org/chromium/chromium/src/+/main:v8/src/wasm/turboshaft-graph-interface.cc)) handles `call` and `return_call` through separate methods, `CallDirect` and `ReturnCall`. `CallDirect` checks whether the callee is a Well-Known Import via `HandleWellKnownImport` and, if so, inlines the operation directly into the Turboshaft graph. `ReturnCall` had no such check. Every `return_call` to an imported function went through the bridge unconditionally.
+V8's Turboshaft graph builder ([`turboshaft-graph-interface.cc`](https://source.chromium.org/chromium/chromium/src/+/main:v8/src/wasm/turboshaft-graph-interface.cc)) handles `call` and `return_call` through separate methods, `CallDirect` and `ReturnCall`. `CallDirect` checks whether the callee is a Well-Known Import via `HandleWellKnownImport` and, if so, inlines the operation into the Turboshaft graph. `ReturnCall` had no such check. Every `return_call` to an imported function went through the bridge.
 
 Kotlin's String wrapper functions are thin forwarders to `wasm:js-string` builtins. The tail call compiler rewrites the forwarding call inside each wrapper from `call` to `return_call`, and each of those calls now bypassed TurboFan's WKI inlining.
 
-## The fix and what it confirmed
+### The fix and what it confirmed
 
-The fix adds the same `HandleWellKnownImport` check to `ReturnCall` (+16 lines). When the callee is recognized as a single-result WKI, the inlined result is returned via `DoReturn` instead of going through the bridge.
+The fix adds the same `HandleWellKnownImport` check to `ReturnCall` (+16 lines). When the callee matches a single-result WKI, the code inlines the result and returns it via `DoReturn`, bypassing the bridge.
 
-A minimal WAT reproducer (50M iterations of `return_call` vs `call` to `wasm:js-string` `length`) showed a ~13.6x gap on stock V8 that disappeared on the patched build.
+A minimal WAT reproducer (50M iterations of `return_call` vs `call` to `wasm:js-string` `length`) showed a ~13.6x gap on stock V8 that the patch closed.
 
 ```
                       call              return_call
@@ -102,7 +102,7 @@ stock V8              ~2882 M ops/s     ~211 M ops/s
 patched V8            ~2876 M ops/s     ~2883 M ops/s
 ```
 
-Re-running the Kotlin benchmarks on the patched V8 confirmed that the slowdown was entirely caused by this bug. Both the markdown parser and the rql parser returned to parity with the baseline.
+Re-running the Kotlin benchmarks on the patched V8 confirmed this bug caused the full slowdown. Both the markdown parser and the rql parser matched the baseline.
 
 | Benchmark | OFF | ON (stock V8) | ON (patched V8) |
 |---|---:|---:|---:|
@@ -111,7 +111,7 @@ Re-running the Kotlin benchmarks on the patched V8 confirmed that the slowdown w
 | parseNestedParens100 | 118,393 | 70,241 (−41%) | 118,045 (parity) |
 | parseLongChain1000 | 6,715 | 3,727 (−44%) | 6,750 (parity) |
 
-Parity, not improvement. The fix removed the artificial penalty, confirming that these workloads have no tail-call-eligible hot paths to benefit from.
+The fix removed the artificial penalty but added no speedup, confirming that these workloads have no tail-call-eligible hot paths.
 
 ## Why no improvement, and what comes next
 
@@ -122,9 +122,10 @@ val operand = parsePrecedence(prefixPrecedence)
 Expression.UnaryOp(operator, operand)   // not a tail call
 ```
 
-The current tail call pass can only emit `return_call` for calls that are already in tail position in the IR. To make tail calls useful on code like this, the compiler needs to create new tail positions that do not exist in the source. OCaml 4.14's TMC (tail modulo cons) rewrites `Cons(x, f(y))` so that `f(y)` becomes a tail call by writing the result into a pre-allocated cell. A CPS (continuation-passing style) transform can generalize this further. Both are active areas of research in functional language compilers. Applying these transforms to Kotlin/Wasm IR is the next step for this project.
+The current tail call pass can only emit `return_call` for calls that sit in tail position in the IR. To make tail calls useful on code like this, the compiler needs to create new tail positions that do not exist in the source. OCaml 4.14's TMC (tail modulo cons) rewrites `Cons(x, f(y))` so that `f(y)` becomes a tail call by writing the result into a pre-allocated cell. A CPS (continuation-passing style) transform can generalize this further. Both are active areas of research in functional language compilers. Applying these transforms to Kotlin/Wasm IR comes next.
 
 ## Upstream status
 
 - Chromium issue: [chromium:527088951](https://issues.chromium.org/issues/527088951)
-- Gerrit CL: [v8/v8+/7989752](https://chromium-review.googlesource.com/c/v8/v8/+/7989752) (includes a mjsunit test)
+- Gerrit CL: [v8/v8+/7989752](https://chromium-review.googlesource.com/c/v8/v8/+/7989752)
+
