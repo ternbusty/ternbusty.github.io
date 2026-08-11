@@ -6,10 +6,6 @@ categories: [Technology, Compiler]
 tags: [Kotlin, WebAssembly, Compiler, GSoC]
 ---
 
-## What the tail call PR series covers
-
-The [Kotlin/Wasm tail call PR series](https://ternbusty.github.io/posts/gsoc-wasm-tail-calls.html) makes the compiler emit native Wasm tail call instructions (`return_call`, `return_call_ref`) for calls that sit in tail position. The Wasm spec guarantees that a tail call reuses the caller's stack frame, so any chain of tail calls runs in constant stack space regardless of depth.
-
 ## Patterns that are optimized
 
 ### Static dispatch
@@ -230,26 +226,26 @@ I surveyed 18 Kotlin multiplatform libraries targeting wasmJs, selected from ~18
 <details>
 <summary>Surveyed repositories</summary>
 
-| Repository | Domain |
-|---|---|
-| [arkivanov/Decompose](https://github.com/arkivanov/Decompose) | Navigation / lifecycle |
-| [arrow-kt/arrow](https://github.com/arrow-kt/arrow) | Functional programming |
-| [a-sit-plus/jsonpath4k](https://github.com/a-sit-plus/jsonpath4k) | JSONPath evaluation |
-| [AdrianKuta/Tree-Data-Structure](https://github.com/AdrianKuta/Tree-Data-Structure) | Generic tree |
-| [Ashampoo/kim](https://github.com/Ashampoo/kim) | Image metadata |
-| [BenWoodworth/knbt](https://github.com/BenWoodworth/knbt) | NBT serialization |
-| [boswelja/compose-markdown](https://github.com/boswelja/compose-markdown) | Markdown rendering |
-| [ExoQuery/pprint-kotlin](https://github.com/ExoQuery/pprint-kotlin) | Pretty-printing |
-| [huarangmeng/latex](https://github.com/huarangmeng/latex) | LaTeX parsing |
-| [MohamedRejeb/compose-rich-editor](https://github.com/MohamedRejeb/compose-rich-editor) | Rich text editor |
-| [MohamedRejeb/Ksoup](https://github.com/MohamedRejeb/Ksoup) | HTML parsing |
-| [nacular/doodle](https://github.com/nacular/doodle) | UI framework |
-| [pdvrieze/xmlutil](https://github.com/pdvrieze/xmlutil) | XML / XPath |
-| [prof18/RSS-Parser](https://github.com/prof18/RSS-Parser) | RSS / Atom feed parsing |
-| [rjaros/kilua](https://github.com/rjaros/kilua) | Web framework |
-| [SciProgCentre/kmath](https://github.com/SciProgCentre/kmath) | Math / symbolic expressions |
-| [SnipMeDev/Highlights](https://github.com/SnipMeDev/Highlights) | Syntax highlighting |
-| [square/wire](https://github.com/square/wire) | Protocol Buffers |
+<ul>
+<li><a href="https://github.com/arkivanov/Decompose">arkivanov/Decompose</a></li>
+<li><a href="https://github.com/arrow-kt/arrow">arrow-kt/arrow</a></li>
+<li><a href="https://github.com/a-sit-plus/jsonpath4k">a-sit-plus/jsonpath4k</a></li>
+<li><a href="https://github.com/AdrianKuta/Tree-Data-Structure">AdrianKuta/Tree-Data-Structure</a></li>
+<li><a href="https://github.com/Ashampoo/kim">Ashampoo/kim</a></li>
+<li><a href="https://github.com/BenWoodworth/knbt">BenWoodworth/knbt</a></li>
+<li><a href="https://github.com/boswelja/compose-markdown">boswelja/compose-markdown</a></li>
+<li><a href="https://github.com/ExoQuery/pprint-kotlin">ExoQuery/pprint-kotlin</a></li>
+<li><a href="https://github.com/huarangmeng/latex">huarangmeng/latex</a></li>
+<li><a href="https://github.com/MohamedRejeb/compose-rich-editor">MohamedRejeb/compose-rich-editor</a></li>
+<li><a href="https://github.com/MohamedRejeb/Ksoup">MohamedRejeb/Ksoup</a></li>
+<li><a href="https://github.com/nacular/doodle">nacular/doodle</a></li>
+<li><a href="https://github.com/pdvrieze/xmlutil">pdvrieze/xmlutil</a></li>
+<li><a href="https://github.com/prof18/RSS-Parser">prof18/RSS-Parser</a></li>
+<li><a href="https://github.com/rjaros/kilua">rjaros/kilua</a></li>
+<li><a href="https://github.com/SciProgCentre/kmath">SciProgCentre/kmath</a></li>
+<li><a href="https://github.com/SnipMeDev/Highlights">SnipMeDev/Highlights</a></li>
+<li><a href="https://github.com/square/wire">square/wire</a></li>
+</ul>
 
 </details>
 
