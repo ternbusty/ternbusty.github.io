@@ -103,18 +103,11 @@ For function references like `::doubled`, the compiler generates a reference cla
 
 ## Lambda dispatch
 
-Lambda closures go through `FunctionN<R>.invoke()`, which does not emit `return_call` today. Two Kotlin/Wasm-specific issues block it.
+Lambda closures go through `FunctionN<R>.invoke()`. Because `R` is a type parameter, Kotlin erases the `invoke` method's return type to `Any?` at the Wasm level. This creates two obstacles for tail calls.
 
-- [`GenericReturnTypeLowering`](https://github.com/JetBrains/kotlin/blob/master/compiler/ir/backend.wasm/src/org/jetbrains/kotlin/backend/wasm/lower/GenericReturnTypeLowering.kt) sees a mismatch between the erased return type `Any?` and the call-site type, wrapping the invoke in a cast that demotes it from tail position.
+1. [`GenericReturnTypeLowering`](https://github.com/JetBrains/kotlin/blob/master/compiler/ir/backend.wasm/src/org/jetbrains/kotlin/backend/wasm/lower/GenericReturnTypeLowering.kt) sees a mismatch between the erased return type `Any?` and the call-site type, wrapping the `invoke` in a cast that demotes it from tail position.
 
-```
-Composite {
-    action.invoke()        // evaluated as a statement, discarded
-    Unit.getInstance()     // the actual "result"
-}
-```
-
-- Even without the cast, the Wasm-level signature mismatch between `anyref` and the caller's actual return type would cause the validator to reject `return_call_ref`.
+2. Even without the cast, the Wasm-level signature mismatch between `(ref null $kotlin.Any)` and the caller's actual return type would cause the validator to reject `return_call_ref`.
 
 ```kotlin
 fun runThen(n: Int, action: () -> Unit) {
@@ -123,7 +116,25 @@ fun runThen(n: Int, action: () -> Unit) {
 }
 ```
 
-[PR #17](https://github.com/ternbusty/kotlin/pull/17) addresses both issues.
+`runThen` returns `void` at the Wasm level while `invoke` returns `(ref null $kotlin.Any)`. Both obstacles apply here.
+
+### Lambda-to-lambda dispatch
+
+```kotlin
+fun cps(n: Int, k: (Int) -> Int): Int =
+    if (n == 0) k(0)
+    else cps(n - 1) { x: Int -> k(x + 1) }
+```
+
+When one lambda's `invoke` calls another lambda's `invoke`, both methods return `Any?`. The Wasm return types match, so obstacle 2 does not apply.
+
+Obstacle 1 still produces an intermediate IR pattern. The cast generates an `unbox` of the inner `invoke` result from `Any?` to `Int`, and the autoboxing phase then re-`box`es it back to `Any?` because the outer `invoke` also returns `Any?`. The round-trip is a no-op at the Wasm level, but it buries the inner `invoke` call inside wrapper IR and prevents tail call marking.
+
+[PR #17](https://github.com/ternbusty/kotlin/pull/17) adds a lowering pass that removes these `box(unbox(e))` round-trips before tail call marking.
+
+### General case
+
+When a non-lambda function calls a lambda in tail position, both obstacles remain. The caller's concrete Wasm return type (`i32`, `void`, etc.) does not match `invoke`'s `(ref null $kotlin.Any)`, so `return_call_ref` cannot be emitted. I haven't come up with an idea to solve this.
 
 ## Beyond tail position
 
@@ -174,7 +185,7 @@ My PR does not cover the full general monoid case, where operands appear on both
 
 ### CPS (Continuation-Passing Style)
 
-Continuation-Passing Style is the most general instantiation. It can transform any recursive pattern by representing the context as a continuation function.
+Continuation-Passing Style is the most general instantiation. It can transform any recursive pattern by representing the context as a continuation.
 
 ```kotlin
 fun transform(n: Int): Int {
@@ -182,7 +193,7 @@ fun transform(n: Int): Int {
     return transform(n - 1) * 2 + 1  // context: · * 2 + 1
 }
 
-// CPS-transformed
+// Textbook CPS
 fun transform_cps(n: Int, k: (Int) -> Int): Int {
     if (n == 0) return k(1)
     return transform_cps(n - 1) { x -> k(x * 2 + 1) }  // tail call
@@ -190,9 +201,11 @@ fun transform_cps(n: Int, k: (Int) -> Int): Int {
 fun transform(n: Int): Int = transform_cps(n) { it }
 ```
 
+The self-call sits in tail position. Rather than allocating a closure for each continuation, the compiler defunctionalizes the continuation into a typed heap frame and a trampoline loop that processes frames iteratively. This avoids closure allocation and lambda dispatch.
+
 This transformation is being implemented in [this PR](https://github.com/ternbusty/kotlin/pull/20) (work in progress).
 
-Each recursive call allocates one closure, which can make performance worse. Constructor and accumulator transforms avoid this cost for their respective shapes, so the compiler prefers them over CPS when the pattern fits.
+Each recursive call allocates one heap frame, which can make performance worse than native recursion. Constructor and accumulator transforms avoid this cost for their respective shapes, so the compiler prefers them over CPS when the pattern fits.
 
 Kotlin's [`DeepRecursiveFunction`](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-deep-recursive-function/) covers the same class of patterns at the library level through the coroutine machinery. The suspend/resume protocol per call can make it slower than native recursion on Kotlin/Wasm. Using it also requires rewriting the recursive function into the `DeepRecursiveFunction { ... }` form and replacing every recursive call with `callRecursive`.
 
