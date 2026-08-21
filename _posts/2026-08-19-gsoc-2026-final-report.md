@@ -62,11 +62,11 @@ Benchmarking the tail call compiler on [Compose Multiplatform](https://github.co
 
 I traced the cause to V8's Turboshaft graph builder, where ReturnCall did not check `HandleWellKnownImport`. `CallDirect` inlines `wasm:js-string` builtins to skip the JS-Wasm bridge, but ReturnCall always went through the bridge. Kotlin compiles string operations to thin wrappers around these builtins, and the tail call compiler rewrites the forwarding call inside each wrapper to return_call, so every string operation fell off the fast path. The fix adds the same WKI check to `ReturnCall` and makes the slowdown disappear.
 
-## What's left to do
-
-### [#19 callRef tail calls](https://github.com/ternbusty/kotlin/pull/19)
+### [#19 callRef tail calls](https://github.com/ternbusty/kotlin/pull/19) → [JetBrains/kotlin#7604](https://github.com/JetBrains/kotlin/pull/7604)
 
 Function references like `::foo` dispatch through an invoke bridge that was not emitting tail calls even when the call was in tail position. In this PR, I modified the codegen to emit return_call_ref when the Wasm-level return types match. This covers indirect higher-order calls through function references.
+
+## What's left to do
 
 ### [#16 Accumulator recursion lowering](https://github.com/ternbusty/kotlin/pull/16)
 
